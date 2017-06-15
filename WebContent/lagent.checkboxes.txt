@@ -1,0 +1,28 @@
+<div id="lagents-filter-panel"style="display: none" class="popover">
+	<div style="background: #31B5D6" class="lagentsItem">Candidate Genes
+	</div>
+	<div style="background: #C6EFF7" class="lagentsItem">
+		<input type="checkbox" name="associatedGenesCheckBox" value="associatedGenes" checked="checked" /> Associated Genes
+	</div>
+	<div style="background: #D63194" class="lagentsItem">
+		<input type="checkbox" name="organismDBCheckBox" value="organism" checked="checked" />Uniprot</div>
+	<div style="background: #FF0000" class="lagentsItem">
+		<input type="checkbox" name="atlasDBCheckBox" value="atlas" checked="checked" />Up Expressions
+	</div>
+	<div style="background: #7BC618" class="lagentsItem">
+		<input type="checkbox" name="atlasDBCheckBox" value="atlas" checked="checked" />Down Expressions
+	</div>
+	<div style="background: #BFBFBF" class="lagentsItem">
+		<input type="checkbox" name="atlasDBCheckBox" value="atlas" checked="checked" />Up-Down Expressions
+	</div>
+	<div style="background: #FF9C4A" class="lagentsItem">
+		<input type="checkbox" name="reactomeDBCheckBox" checked="checked" value="reactome" />Reactome Pathways</div>
+	<div style="background: #FFFF6B" class="lagentsItem">
+		<input type="checkbox" name="chemblDBCheckBox" value="chembl" checked="checked" /> Small Molecules
+	</div>
+	<div style="background: #847308" class="lagentsItem">
+		<input type="checkbox" name="bioModelsDBCheckBox" value="biomodels" checked="checked" />Bio Models</div>
+	<div style="background: #082984" class="lagentsItem">
+		<input type="checkbox" name="bioSamplesDBCheckBox" value="biosamples" checked="checked" />Bio Samples
+	</div>
+</div>

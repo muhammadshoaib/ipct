@@ -1,0 +1,906 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html>
+
+<head>
+<title>Gene-centric connectivity mapper of EBI RDF resource</title>
+
+
+ <style type="text/css">
+        #mynetwork {
+            width: 900px;
+            height: 500px;
+            border: 1px solid lightgray;
+        }
+		
+		#loadingBar {
+             position:absolute;
+            top:0px;
+			bottom:0px;
+            left:0;
+			right:0;
+			margin-left:auto;
+			margin-right:auto;
+			margin-top:auto;
+			margin-bottom:auto;
+            width: 902px;
+            height: 402px;
+            background-color:rgba(200,200,200,0.8);
+            -webkit-transition: all 0.5s ease;
+            -moz-transition: all 0.5s ease;
+            -ms-transition: all 0.5s ease;
+            -o-transition: all 0.5s ease;
+            transition: all 0.5s ease;
+            opacity:1;
+        }
+        #wrapper {
+            position:relative;
+            width:900px;
+            height:400px;
+        }
+
+        #text {
+            position:absolute;
+            top:8px;
+            left:530px;
+            width:30px;
+            height:50px;
+            margin:auto auto auto auto;
+            font-size:22px;
+            color: #000000;
+        }
+
+
+        div.outerBorder {
+            position:relative;
+            top:40%;
+            width:600px;
+            height:44px;
+            margin:auto auto auto auto;
+            border:8px solid rgba(0,0,0,0.1);
+            background: rgb(252,252,252); /* Old browsers */
+            background: -moz-linear-gradient(top,  rgba(252,252,252,1) 0%, rgba(237,237,237,1) 100%); /* FF3.6+ */
+            background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(252,252,252,1)), color-stop(100%,rgba(237,237,237,1))); /* Chrome,Safari4+ */
+            background: -webkit-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* Chrome10+,Safari5.1+ */
+            background: -o-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* Opera 11.10+ */
+            background: -ms-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* IE10+ */
+            background: linear-gradient(to bottom,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* W3C */
+            filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fcfcfc', endColorstr='#ededed',GradientType=0 ); /* IE6-9 */
+            border-radius:72px;
+            box-shadow: 0px 0px 10px rgba(0,0,0,0.2);
+        }
+
+        #border {
+            position:absolute;
+            top:10px;
+            left:10px;
+            width:500px;
+            height:23px;
+            margin:auto auto auto auto;
+            box-shadow: 0px 0px 4px rgba(0,0,0,0.2);
+            border-radius:10px;
+        }
+
+        #bar {
+            position:absolute;
+            top:0px;
+            left:0px;
+            width:20px;
+            height:20px;
+            margin:auto auto auto auto;
+            border-radius:11px;
+            border:2px solid rgba(30,30,30,0.05);
+            background: rgb(0, 173, 246); /* Old browsers */
+            box-shadow: 2px 0px 4px rgba(0,0,0,0.4);
+        }
+    </style>
+
+<script type="text/javascript" src="jquery-1.11.2.min.js"></script>
+
+<script type="text/javascript" src="visdist/vis.js"></script>
+    <link href="visdist//vis.css" rel="stylesheet" type="text/css"/>
+
+	<script type="text/javascript" src="jqueryui/jquery-ui.js"></script>
+	<link href="jqueryui/jquery-ui.css" rel="stylesheet" />
+	
+	<script src="files/jquery.tagsinput.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="files/jquery.tagsinput.min.css" />
+
+<script type="text/javascript">
+	window.onload = function() {
+
+		// id of Cytoscape Web container div
+		document.getElementById('loadingBar').style.display = 'none';
+
+		
+		var div_id = "cytoscapeweb";
+
+		// initialization options
+		var options = {
+			swfPath : "cytoscapeweb/swf/CytoscapeWeb",
+			flashInstallerPath : "cytoscapeweb/swf/playerProductInstall"
+		};
+
+		var exportoptions = {
+
+		}
+
+		// callback when Cytoscape Web has finished drawing
+
+
+			function handle_click(event) {
+				
+				var target = event.target;
+				//alert(event.target);
+				clear();
+				//print("event.group = " + event.group);
+				var keys = ["id", "label", "Full Name", "Database Name", "URL"]; 
+				var displaykeys = ["Identifier", "Label", "Full Name", "Database Name", "URL"]; 
+				//alert(target.data + " " + keys.length);
+				//alert(target.data["Database Name"] + "," + target.data["id"]);
+				var htmlOutput = "<table>";
+				for ( i = 0; i<keys.length; i++) {
+					var variable_name = keys[i];
+					
+					var variable_value = target.data[variable_name];
+					if(variable_name == "URL" && target.data[i] != null){ 
+						variable_value = "<a href=\""+target.data[i]+"\" target=_blank>" + target.data[i] + "</a>";
+					}
+					
+					if(variable_value != null) { 
+						htmlOutput = "<div><div style='width:150px; float:left;'>" + displaykeys[i] + " : </div><div>"
+						+ variable_value + "</div></div>"; 
+						print(htmlOutput);
+						//alert(htmlOutput); 
+					}
+				}
+				event.stopPropagation();
+			}
+
+			function handle_dbl_click(event) {
+				
+				var target = event.target;
+				//alert(target.data["Database Name"] + "," + target.data["id"]);
+				if(target.data["Database Name"] == 'gene') { 
+					alert(target.data["Database Name"] + "," + target.data["id"]);
+					$("input[name=gene_molecule_op][value ='gene']").prop('checked', true);
+					$("#genesList").importTags(target.data["id"]); 
+					
+				} else { 
+					
+				}
+				$( 'input[name=gene_molecule_op]:checked').button("refresh");
+				alert($('input[name=gene_molecule_op]:checked').val());
+				GetGeneList();
+				
+				//alert(target.data["Database Name"] + "," + target.data["id"]);
+				
+				event.stopPropagation();
+			}
+			
+			function clear() {
+				document.getElementById("note").innerHTML = "";
+			}
+
+			function print(msg) {
+				document.getElementById("note").innerHTML += "<p>" + msg
+						+ "</p>";
+			}
+
+
+		// myfun('test');
+		function LinkHoverLinkSearch() {
+			$('.listhyperlinks').click(function(event) {
+				var geneNames = $('#genesList').val();
+				alert(geneNames);
+				// alert(geneNames.indexOf(event.target.id));
+				/*
+				if(geneNames.indexOf(event.target.id) == -1) { 
+					geneNames = geneNames + event.target.id + ";";
+					$('#genesList').val(geneNames);
+				} */
+				if ($('#genesList').tagExist(event.target.id) == false) {
+					$('#genesList').addTag(event.target.id);
+				}
+				
+				//$('#genesList').
+
+				//here you can also do all sort of things 
+			});
+		}
+		
+		
+		function GetGeneList(triggeroption) {
+			var val = $("#INDEX_A").val() + $("#INDEX_B").val()
+					+ $("#INDEX_C").val();
+			//alert(val);
+			$("#INPUT_LIST").html(val);
+
+			var gene_moleculeop = $('input[name=gene_molecule_op]:checked')
+					.val();
+
+			var idata = "indexletter=" + val + "&listType=" + gene_moleculeop;
+			//alert(idata);
+			$.ajax({
+				url : "GetList",
+				data : idata,
+				context : document.body,
+				success : function(result) {
+					//alert(result); 
+					$("#INPUT_LIST").html(result);
+					//alert('hello world');
+					LinkHoverLinkSearch();
+
+				}
+			});
+
+		}
+
+		var xml = null;
+
+		$('#INDEX_A').change(function(event, ui ) {
+			GetGeneList();
+		});
+		$('#INDEX_B').change(function() {
+			GetGeneList();
+		});
+		$('#INDEX_C').change(function() {
+			GetGeneList();
+		});
+
+		/*
+		$("#geneReDrawButton").click(function() {
+			if (xml != null) {
+
+				var draw_options = {
+					// your data goes here
+					network : xml,
+					layout : "ForceDirected",
+					edgeLabelsVisible : true,
+					visualStyle : visual_style,
+					panToCenter : true,
+					panZoomControlPosition : 'bottomLeft',
+				// hide pan zoom
+				// panZoomControlVisible: false 
+				};
+				vis.draw(draw_options);
+			}
+
+		});
+		*/
+		
+		
+		function draw(jsonobject) {
+            // create some nodes
+           // alert('hello world');
+            //var nodes = {"nodes":[{"id":"cervix","label":"cervix","group":"atlas"},{"id":"P26233","label":"CTNB_XENLA","group":"uniprot"},{"id":"Q9WU82","label":"CTNB1_RAT","group":"uniprot"},{"id":"spleen","label":"spleen","group":"atlas"},{"id":"B6V8E6","label":"CTNB1_CANFA","group":"uniprot"},{"id":"R-HSA-1643685","label":"Disease","group":"reactome"},{"id":"bone","label":"bone","group":"atlas"},{"id":"P35222","label":"CTNB1_HUMAN","group":"uniprot"},{"id":"O95750","label":"FGF19_HUMAN","group":"uniprot"},{"id":"Q0VCX4","label":"CTNB1_BOVIN","group":"uniprot"},{"id":"R-HSA-5663202","label":"Diseases of signal transduction","group":"reactome"},{"id":"R-HSA-162582","label":"Signal Transduction","group":"reactome"},{"id":"R-HSA-168249","label":"Innate Immune System","group":"reactome"},{"id":"R-HSA-168256","label":"Immune System","group":"reactome"},{"id":"FGF19","label":"FGF19","group":"gene"},{"id":"R-HSA-1266738","label":"Developmental Biology","group":"reactome"},{"id":"Q02248","label":"CTNB1_MOUSE","group":"uniprot"},{"id":"CTNNB1","label":"CTNNB1","group":"gene"}],"edges":[{"from":"R-HSA-168256","to":"P35222"},{"from":"CTNNB1","to":"P35222"},{"from":"spleen","to":"O95750"},{"from":"CTNNB1","to":"Q02248"},{"from":"R-HSA-162582","to":"O95750"},{"from":"R-HSA-168249","to":"P35222"},{"from":"cervix","to":"P35222"},{"from":"CTNNB1","to":"Q9WU82"},{"from":"R-HSA-1643685","to":"P35222"},{"from":"CTNNB1","to":"Q0VCX4"},{"from":"R-HSA-1266738","to":"P35222"},{"from":"CTNNB1","to":"P26233"},{"from":"bone","to":"Q02248"},{"from":"R-HSA-1643685","to":"O95750"},{"from":"R-HSA-5663202","to":"P35222"},{"from":"bone","to":"P35222"},{"from":"spleen","to":"Q02248"},{"from":"CTNNB1","to":"B6V8E6"},{"from":"FGF19","to":"O95750"},{"from":"spleen","to":"Q0VCX4"},{"from":"R-HSA-168256","to":"O95750"},{"from":"R-HSA-5663202","to":"O95750"},{"from":"R-HSA-1266738","to":"O95750"},{"from":"R-HSA-168249","to":"O95750"},{"from":"cervix","to":"O95750"},{"from":"R-HSA-162582","to":"P35222"},{"from":"bone","to":"O95750"}]};
+			
+            document.getElementById('loadingBar').style.opacity =100;
+            // really clean the dom element
+           document.getElementById('loadingBar').style.display = 'block';
+			
+			// create some edges
+            // create a network
+            var container = document.getElementById('mynetwork');
+            var data = jsonobject;
+            alert(data)
+            var options = {
+                nodes: {
+                    shape: 'dot', size: 24, 
+					scaling: { min: 10, max: 30,
+					label: {min: 8, max: 10, drawThreshold: 2
+					  }
+					},
+					font: { size: 12, face: 'Tahoma' }
+                }, 
+                
+                edges: {
+                    width: 2.5,
+                	selectionWidth: 2.5
+                }, 
+				
+				groups: {
+				  'atlas': { shape: 'dot', color: '#FF9900' },
+				  'reactome': { shape: 'dot', color: "#2B7CE9" },
+				  'uniprot': { shape: 'dot', color: "#5A1E5C"  },
+				  'gene': { shape: 'circle', color: "#C5000B"  },
+				  'chembl': { shape: 'dot', color: "#109618"  } 
+				 }, 
+				  
+				  physics: {
+                    forceAtlas2Based: {
+                        gravitationalConstant: -26,
+                        centralGravity: 0.005,
+                        springLength: 230,
+                        springConstant: 0.18
+                    },
+                    maxVelocity: 146,
+                    solver: 'forceAtlas2Based',
+                    timestep: 0.35,
+                    stabilization: {iterations:300}
+                },
+				
+				//physics: false,
+			  interaction: {
+				tooltipDelay: 200,
+				hideEdgesOnDrag: false, 
+				multiselect: true
+			  }
+				//groups: {"aglas", "reactome", "uniprot", "biomodels"}
+            };
+            var network = new vis.Network(container, data, {});
+           // alert("HELLO WORLD");
+			
+			network.on("stabilizationProgress", function(params) {
+                var maxWidth = 496;
+                var minWidth = 20;
+                var widthFactor = params.iterations/params.total;
+                var width = Math.max(minWidth,maxWidth * widthFactor);
+
+                document.getElementById('bar').style.width = width + 'px';
+                document.getElementById('text').innerHTML = Math.round(widthFactor*100) + '%';
+            });
+            network.once("stabilizationIterationsDone", function() {
+                document.getElementById('text').innerHTML = '100%';
+                document.getElementById('bar').style.width = '496px';
+                document.getElementById('loadingBar').style.opacity = 0;
+                // really clean the dom element
+                setTimeout(function () {
+                	document.getElementById('loadingBar').style.display = 'none';}, 500);
+            });
+
+        }
+
+		$("#geneSubmitButton")
+				.click(
+						function(event) {
+							$("#geneSubmitButton").attr("disabled", "disabled");
+							//alert('hello world');
+							$("#cytoscapeweb").text('');
+
+							var databases = '';
+
+							var gene_moleculeop = $(
+									'input[name=gene_molecule_op]:checked')
+									.val();
+							//alert(gene_moleculeop); 
+
+							if ($('input[name=atlasDBCheckBox]').is(':checked')) {
+								databases = databases + 'atlas;';
+							}
+							if ($('input[name=reactomeDBCheckBox]').is(
+									':checked')) {
+								databases = databases + 'reactome;';
+							}
+							if ($('input[name=chemblDBCheckBox]')
+									.is(':checked')) {
+								databases = databases + 'chembl;';
+							}
+							if ($('input[name=bioModelsDBCheckBox]').is(
+									':checked')) {
+								databases = databases + "biomodels;"
+							}
+							if ($('input[name=bioSamplesDBCheckBox]').is(
+									':checked')) {
+								databases = databases + "biosamples;"
+							}
+							if ($('input[name=organismDBCheckBox]').is(
+									':checked')) {
+								databases = databases + "organism;"
+							}
+
+							var outputType = $(
+									'input[name=outputOption]:checked').val();
+
+							var graphType = $(
+									'input[name=graphOptions]:checked').val();
+
+							var geneNames = $('#genesList').val();
+							var organisim = $("#taxonomicOrganisims").val(); 
+							var organName = $("#atlasOrgans").val(); 
+							
+							var pathwayType = $('input[name=pathWayOption]:checked').val(); 
+							
+							
+
+							var idata = 'inputType=' + gene_moleculeop
+									+ '&genesList=' + geneNames + '&databases='
+									+ databases + "&output=" + outputType
+									+ "&graphType=" + graphType 
+									+ "&pathwayType=" + pathwayType
+									+ "&taxn=" + organisim 
+									+ "&organName=" + organName
+									+ "&graphOption=json";
+
+							alert(idata); 
+
+							if (outputType == "DownloadGraphML") {
+								window.open("GeneSearch?" + idata);
+								return;
+							}
+
+							////alert(databases);
+
+							$.ajax({
+								url : "GeneSearch",
+								data : idata,
+								success : function(result) {
+								 alert(result); 
+
+									if (result == 'NO INPUT GIVEN') {
+										alert("Please Input valid Gene ID");
+										$("#geneSubmitButton").removeAttr(
+												"disabled");
+										return;
+									}
+									
+									draw(result); 
+
+									$("#geneSubmitButton").removeAttr(
+											"disabled");
+
+								}
+							});
+
+						});
+		
+		
+
+		var visual_style = {
+
+			nodes : {
+				size : 50,
+				color : {
+					defaultValue : "#FFF",
+					discreteMapper : {
+						attrName : "Database Name",
+						entries : [ {
+							attrValue : "gene",
+							value : "#0B94B1"
+						}, {
+							attrValue : "uniprot",
+							value : "#FA5858"
+						}, {
+							attrValue : "atlas",
+							value : "#dddd00"
+						}, {
+							attrValue : "reactome",
+							value : "#D2691E"
+						}, {
+							attrValue : "chembl",
+							value : "#556B2F"
+						}, {
+							attrValue : "biomodels",
+							value : "#ADFF2F"
+						}, {
+							attrValue : "biosamples",
+							value : "#00FA9A"
+						} ]
+					}
+				},
+				labelHorizontalAnchor : "center"
+			},
+			edges : {
+				width : 2,
+				color : "#222"
+			}
+		};
+
+		//alert("Hello World");
+		$( "button" ).button(); 
+		//$( "#gene_or_smallmolecule").buttonset();
+		
+		$( "#INDEX_A" ).selectmenu({ change: function(event, ui ) { GetGeneList(); }})
+		.selectmenu( "menuWidget" ).addClass( "overflow" );
+		$( "#INDEX_B" ).selectmenu({ change: function(event, ui ) { GetGeneList(); }})
+		.selectmenu( "menuWidget" ).addClass( "overflow" );;
+		$( "#INDEX_C" ).selectmenu({ change: function(event, ui ) { GetGeneList(); }})
+		.selectmenu( "menuWidget" ).addClass( "overflow" );;
+		
+		$('input[name=gene_molecule_op]').change(function () {
+			$('#genesList').importTags('');
+			GetGeneList();
+		});
+		
+		$('#genesList').tagsInput({
+			'delimiter': [';'], 
+			'height':'33px',
+			'width':'500px',
+			'defaultText':''
+		}); 
+
+		GetGeneList();
+	};
+	
+	
+	
+	$(function() {
+		$( "#geneOrSmallMolecule").buttonset();
+	  });
+	
+	function TooglleAdvanceOptions() { 
+		$( "#advanceFilteringOptions").toggle();
+		if($( "#advanceFilteringOptions").is(":visible")) { 
+			$( "#basicAdvanceSearchToggler").html("Basic Search"); 
+		$.ajax({
+			url : "GetOrgans",
+			context : document.body,
+			success : function(result) {
+				
+				$("#atlasOrgans").html(result);
+				$( "#atlasOrgans" ).selectmenu().selectmenu( "menuWidget" ).addClass( "overflow" );
+				//alert('hello world');
+				
+				
+			}
+		});
+		 
+		$.ajax({
+			url : "getOrganismList",
+			context : document.body,
+			success : function(result) {
+				
+	
+				
+				$("#taxonomicOrganisims").html(result);
+				$( "#taxonomicOrganisims" ).selectmenu().selectmenu( "menuWidget" ).addClass( "overflow" );
+				//alert('hello world');
+				
+				
+			}
+		});
+		
+		
+		} else { $( "#basicAdvanceSearchToggler").html("Advance Search"); }
+
+	}
+</script>
+
+<style>
+* {
+	margin: 0;
+	padding: 0;
+	font-family: Helvetica, Arial, Verdana, sans-serif;
+}
+.overflow { height: 300px; }
+html, body {
+	/* height: 100%; */
+	width: 100%;
+	padding: 0;
+	margin: 0;
+}
+
+body {
+	line-height: 1.5;
+	color: #000000;
+	font-size: 14px;
+}
+
+#wrap {
+	border: solid 1px #888;
+	width: 1200px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+#header {
+	width: 1200px;
+	text-align: center;
+	padding-top: 30px;
+	padding-bottom: 30px;
+	margin-left: auto;
+	margin-right: auto;
+	background-color: #030;
+	font-size: 24px;
+	color: #9F3;
+	font-weight: bold;
+}
+
+#leftmenu {
+	width: 170px;
+	background-color: #030;
+	float: left;
+	padding-left: 20px;
+	padding-right: 10px;
+	padding-top: 10px;
+	height: auto;
+}
+
+#leftMenuList {
+	height: 400px;
+	overflow: auto;
+	width: 150px;
+	padding-bottom: 20px;
+	margin-top: 10px;
+	margin-bottom: 20px;
+}
+
+#leftMenuList a {
+	color: #fff;
+	text-decoration: none;
+	display: block;
+	margin-top: 1px;
+	margin-bottom: 2px;
+}
+
+#leftMenuList a:hover {
+	text-decoration: underline;
+	font-weight: bold;
+}
+
+#mainBody {
+	width: 1000px;
+	float: left;
+}
+
+#inputbox {
+	width: 930px;
+	padding-top: 30px;
+	padding-bottom: 30px;
+	padding-left: 20px;
+	padding-right: 50px;
+	margin-left: auto;
+	margin-right: auto;
+	font-weight: bold;
+	background: #CCC;
+	float: left;
+}
+
+#footer {
+	width: 1200px;
+	text-align: center;
+	padding-top: 30px;
+	padding-bottom: 30px;
+	margin-left: auto;
+	margin-right: auto;
+	background-color: #030;
+	font-size: 14px;
+	color: #9F3;
+	font-weight: bold;
+}
+/* The Cytoscape Web container must have its dimensions set. */
+#mynetwork {
+	width: 100%;
+	height: 500px;
+	margin-left: auto;
+	margin-right: auto;
+	overflow: hidden;
+	/* position: relative; */
+}
+
+.submitbuttion {
+	padding-left: 10px; padding-right: 10px; 
+	padding-top: 5px; padding-bottom: 5px;
+}
+
+#note {
+	width: 960px;
+	margin-left: auto;
+	margin-right: auto;
+	height: 180px;
+	background-color: #f0f0f0;
+	padding: 20px;
+	overflow: auto;
+}
+
+p {
+	padding: 0 0.5em;
+	margin: 0;
+}
+
+.leftfloat {
+	float: left;
+}
+.rightFloat { float: right; }
+
+p:first-child {
+	padding-top: 0.5em;
+}
+</style>
+</head>
+
+<body>
+	<div id="wrap">
+		<div id="header">Gene-centric connectivity mapper of EBI RDF
+			resource</div>
+		<div>
+			<div id="leftmenu">
+				<select id="INDEX_A" style="width: 150px;">
+					<option value="A">A</option>
+					<option value="B">B</option>
+					<option value="C">C</option>
+					<option value="D">D</option>
+					<option value="E">E</option>
+					<option value="F">F</option>
+					<option value="G">G</option>
+					<option value="H">H</option>
+					<option value="I">I</option>
+					<option value="J">J</option>
+					<option value="K">K</option>
+					<option value="L">L</option>
+					<option value="M">M</option>
+					<option value="N">N</option>
+					<option value="O">O</option>
+					<option value="P">P</option>
+					<option value="Q">Q</option>
+					<option value="R">R</option>
+					<option value="S">S</option>
+					<option value="T">T</option>
+					<option value="U">U</option>
+					<option value="V">V</option>
+					<option value="W">W</option>
+					<option value="X">X</option>
+					<option value="Y">Y</option>
+					<option value="Z">Z</option>
+				</select><br /> <select id="INDEX_B" style="width: 150px;">
+					<option value="_"></option>
+					<option value="A">A</option>
+					<option value="B">B</option>
+					<option value="C">C</option>
+					<option value="D">D</option>
+					<option value="E">E</option>
+					<option value="F">F</option>
+					<option value="G">G</option>
+					<option value="H">H</option>
+					<option value="I">I</option>
+					<option value="J">J</option>
+					<option value="K">K</option>
+					<option value="L">L</option>
+					<option value="M">M</option>
+					<option value="N">N</option>
+					<option value="O">O</option>
+					<option value="P">P</option>
+					<option value="Q">Q</option>
+					<option value="R">R</option>
+					<option value="S">S</option>
+					<option value="T">T</option>
+					<option value="U">U</option>
+					<option value="V">V</option>
+					<option value="W">W</option>
+					<option value="X">X</option>
+					<option value="Y">Y</option>
+					<option value="Z">Z</option>
+				</select><br /> <select id="INDEX_C" style="width: 150px;">
+					<option value="_"></option>
+					<option value="A">A</option>
+					<option value="B">B</option>
+					<option value="C">C</option>
+					<option value="D">D</option>
+					<option value="E">E</option>
+					<option value="F">F</option>
+					<option value="G">G</option>
+					<option value="H">H</option>
+					<option value="I">I</option>
+					<option value="J">J</option>
+					<option value="K">K</option>
+					<option value="L">L</option>
+					<option value="M">M</option>
+					<option value="N">N</option>
+					<option value="O">O</option>
+					<option value="P">P</option>
+					<option value="Q">Q</option>
+					<option value="R">R</option>
+					<option value="S">S</option>
+					<option value="T">T</option>
+					<option value="U">U</option>
+					<option value="V">V</option>
+					<option value="W">W</option>
+					<option value="X">X</option>
+					<option value="Y">Y</option>
+					<option value="Z">Z</option>
+				</select><br />
+				<div id="leftMenuList">
+					<div id="INPUT_LIST">&nbsp;</div>
+				</div>
+			</div>
+			<div id="mainBody">
+				<div id="inputbox">
+					<div style="float: left; width:230px;">
+					<div id="geneOrSmallMolecule">
+						<input type="radio" name="gene_molecule_op" value="gene"
+							checked="checked" id="geneRadioButton" /><label for="geneRadioButton">Gene</label>
+							 <input type="radio" name="gene_molecule_op" value="molecule" id="meleculeRadioButton" />
+							<label for="meleculeRadioButton">Small Molecule</label> 
+					</div>
+					<div style="float: left; width: 210px; padding-top: 20px; padding-right: 10px;">Enter List of Genes /
+						Small Molecule Seperated by ";"&nbsp; &nbsp; &nbsp;</div>
+					</div>
+					<div style="float: left; width: 570px;">
+						<div style="display: block; padding-bottom: 10px;">
+						<input type="text" name="genesList" id="genesList" size="60"
+							style="padding: 10px; font-size: 14px;"  /> </div>
+						<div style=" display: block; padding-bottom: 20px;" id="databasesOptions">
+							<div class="leftfloat">
+								<input type="checkbox" name="organismDBCheckBox"
+									value="organism" checked="checked" />Taxonomic Organism
+								&nbsp;&nbsp;
+							</div>
+							<div class="leftfloat">
+								<input type="checkbox" name="atlasDBCheckBox" value="atlas"
+									checked="checked" />Atles Database &nbsp;&nbsp;
+							</div>
+							<div class="leftfloat">
+								<input type="checkbox" name="reactomeDBCheckBox"
+									value="reactome" />Reactome Database &nbsp;&nbsp;
+							</div>
+							<div class="leftfloat">
+								<input type="checkbox" name="chemblDBCheckBox" value="chembl" />ChEMBL
+								Database &nbsp;&nbsp;
+							</div>
+							<div class="leftfloat">
+								<input type="checkbox" name="bioModelsDBCheckBox"
+									value="biomodels" />Bio Models Database &nbsp;&nbsp;
+							</div>
+							<div class="leftfloat">
+								<input type="checkbox" name="bioSamplesDBCheckBox"
+									value="biosamples" />Bio Samples Database &nbsp;&nbsp;
+							</div>
+							<div style="clear: both;"></div>
+						</div>
+						<div class="rightFloat" style="padding-right: 30px; padding-bottom: 20px;
+						 display: block; width: 500px; text-align: right; ">
+							<a href="javascript:TooglleAdvanceOptions();" id="basicAdvanceSearchToggler">Advance Options</a>
+						</div>
+						
+						<div id="advanceFilteringOptions" style="display: none;">
+						
+						<div style=" padding-bottom: 20px; display: block;">
+						Select Taxnomic Organism
+						<select name="taxonomicOrganisims" id="taxonomicOrganisims" style="width: 400px;">
+						
+						</select>
+						</div>
+						
+						<div style=" padding-bottom: 20px; display: block;">
+						Select Organ Part (For Atlas Expressions)
+						<select name="atlasOrgans" id="atlasOrgans"  style="width: 400px;">
+						
+						</select>
+						</div>
+						
+						<input type="radio" name="pathWayOption" value="allPathways" checked="checked" />All Pathways &nbsp; &nbsp; 
+							<input type="radio" name="pathWayOption" value="metabolicPathways" />Metabolic Pathways &nbsp; &nbsp; 
+							<input type="radio" name="pathWayOption" value="signalingPathways" />Signaling Pathways
+						 <br /> <br /> 
+						
+						<input type="radio" name="outputOption"
+							value="ViewGraph" checked="checked" />View Graph &nbsp; &nbsp; <input
+							type="radio" name="outputOption" value="DownloadGraphML" />Download
+						GraphML <br /> <br /> <input type="radio" name="graphOptions"
+							value="detailed" checked="checked" />Detailed With all links
+						&nbsp; &nbsp; <input type="radio" name="graphOptions"
+							value="summerized" />Summerized with Common Links
+						</div>
+					</div>
+					<div style="float: left; width: 100px;">
+						<button class="submitbuttion" id="geneSubmitButton">Search</button>
+						<br /> <br />
+						<button class="submitbuttion" id="geneReDrawButton">Redraw</button>
+					</div>
+					<div style="clear: both;"></div>
+				</div>
+				<div id="mynetwork" style="width: 1000px;">&nbsp; &nbsp;.</div>
+
+				<div id="loadingBar">
+				        <div class="outerBorder">
+				            <div id="text">0%</div>
+				            <div id="border">
+				                <div id="bar"></div>
+				            </div>
+				        </div>
+				    </div>
+
+				<div id="note">
+					<p>Click nodes or edges.</p>
+				</div>
+
+
+			</div>
+			<div style="clear: both;"></div>
+			<div id="footer">Center of Cancer Genome Discovery Asan Medical
+				Center</div>
+			<div style="clear: both;"></div>
+		</div>
+		</div> 
+</body>
+
+</html>

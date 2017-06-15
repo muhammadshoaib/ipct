@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Agency - Start Bootstrap Theme</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="css/agency.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Kaushan+Script' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700' rel='stylesheet' type='text/css'>
+    
+	<link href="jqueryui/jquery-ui.css" rel="stylesheet" type="text/css"/>
+
+	<link rel="stylesheet" href="css/bootstrap-multiselect.css" type="text/css">
+	<link rel="stylesheet" type="text/css" href="files/jquery.tagsinput.min.css" />
+	
+	<link href="css/bootstrap-tokenfield.css" rel="stylesheet" type="text/css"/>
+	<link href="css/tokenfield-typeahead.css" rel="stylesheet" type="text/css"/>
+	
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+<body id="page-top" class="index">
+	<div id="cover"></div>
+    <!-- Navigation -->
+    <nav id="navbar-homepage" class="navbar navbar-default navbar-fixed-top">
+        <div class="container">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand page-scroll" href="#page-top">c-Mapper</a>
+            </div>
+			
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="hidden">
+                        <a href="#page-top"></a>
+                    </li>
+                    <li>
+                        <a  href="#" id="database-filter-popover">Databases</a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="#portfolio">Pathways</a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="#about">About</a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="#team">Team</a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="#contact">Contact</a>
+                    </li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container-fluid -->
+    </nav>
+	
+	<nav id="navbar-network" class="navbar navbar-default navbar-fixed-top navbar-network">
+        <div class="container">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <a class="navbar-brand page-scroll" href="#page-top">c-Mapper</a>
+				
+            </div>
+			
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            		<div class="header-form"><div class="tokenfield-container">
+				 <input type="text" class="form-control input-xl" id="genesList"  required data-validation-required-message="Please enter your name.">
+                </div>
+                <div class="">
+				<select id="taxonomicOrganisims" class="filtering-options" 
+					data-selected-text-format="count"
+					multiple="multiple" name="taxonomicOrganisims">
+					<option value="" selected="selected">All Organisims</option>
+				</select>
+				<select id="atlasOrgans" class="filtering-options" 
+					multiple="multiple" name="atlasOrgans"
+					data-selected-text-format="count">
+					<option value="" selected="selected">All Organs</option>
+				</select>
+				<select id="pathWayOption" class="filtering-options" name="pathWayOption">
+					<option value="allPathways" selected="selected">All Pathways</option>
+					<option value="metabolicPathways">Metabolic Pathways</option>
+					<option value="signalingPathways">Signaling Pathways</option>
+				</select>
+				<select id="graphOptions" class="filtering-options" name="graphOptions">
+					<option value="detailed" selected="selected">All Connections</option>
+					<option value="summerized">Shared Connections</option>
+				</select>
+				<select id="outputOption" class="filtering-options" name="outputOption">
+					<option value="ViewGraph" selected="selected">View Graph </option>
+					<option value="DownloadGraphML">Download GraphML</option>
+					<option value="DownloadJSON">Download JSON</option>
+				</select>
+				<button type="button" id="btnSave" value="Save PNG" class="btn btn-default input-xl">
+					<span class="glyphicon glyphicon-save" aria-hidden="true"></span>
+				</button>
+				</div>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container-fluid -->
+    </nav>
+
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="intro-text">
+				<!-- 
+				<div class="intro-lead-in">
+				<a href="#" class="btn btn-xl"> Databases</a>
+				<a href="#" class="btn btn-xl"> Organisims</a>
+				<a href="#" id="pathway-filter-popover" class="btn btn-xl"> Pathways</a>
+				<a href="#" class="btn btn-xl"> Output</a>
+				</div>
+				-->
+				<div class="">
+				<select id="taxonomicOrganisims" class="filtering-options" 
+					data-selected-text-format="count"
+					multiple="multiple" name="taxonomicOrganisims">
+					<option value="" selected="selected">All Organisims</option>
+				</select>
+				<select id="atlasOrgans" class="filtering-options" 
+					multiple="multiple" name="atlasOrgans"
+					data-selected-text-format="count">
+					<option value="" selected="selected">All Organs</option>
+				</select>
+				<select id="pathWayOption" class="filtering-options" name="pathWayOption">
+					<option value="allPathways" selected="selected">All Pathways</option>
+					<option value="metabolicPathways">Metabolic Pathways</option>
+					<option value="signalingPathways">Signaling Pathways</option>
+				</select>
+				<select id="graphOptions" class="filtering-options" name="graphOptions">
+					<option value="detailed" selected="selected">All Connections</option>
+					<option value="summerized">Shared Connections</option>
+				</select>
+				<select id="outputOption" class="filtering-options" name="outputOption">
+					<option value="ViewGraph" selected="selected">View Graph </option>
+					<option value="DownloadGraphML">Download GraphML</option>
+					<option value="DownloadJSON">Download JSON</option>
+				</select>
+				</div>
+				
+                <div class="intro-lead-in">Enter Gene or Small Molecule Names</div>
+                
+                <div id="geneOrSmallMolecule">
+					<input type="radio" name="gene_molecule_op" value="gene"
+						checked="checked" id="geneRadioButton" /><label
+						for="geneRadioButton">Gene</label> <input type="radio"
+						name="gene_molecule_op" value="molecule"
+						id="meleculeRadioButton" /> <label for="meleculeRadioButton">Small
+						Molecule</label>
+				</div>
+                
+				<div class="header-form"><div class="tokenfield-container">
+				 <input type="text" class="form-control input-xl" id="genesList"  required data-validation-required-message="Please enter your name.">
+                </div>
+                </div>
+				
+				
+				
+				<a href="#services" id="geneSubmitButton" class="btn btn-xl">Tell Me More</a>
+            </div>
+        </div>
+    </header>
+	<div id="cygraph"><img src="files/load.gif"/></div>
+	<div id="cytoscapeweb"></div>
+	
+    <footer class="navbar-fixed-bottom">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <span class="copyright">Copyright &copy; Your Website 2014</span>
+                </div>
+                <div class="col-md-4">
+                    <ul class="list-inline social-buttons">
+                        <li><a href="#"><i class="fa fa-twitter"></i></a>
+                        </li>
+                        <li><a href="#"><i class="fa fa-facebook"></i></a>
+                        </li>
+                        <li><a href="#"><i class="fa fa-linkedin"></i></a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <ul class="list-inline quicklinks">
+                        <li><a href="#">Privacy Policy</a>
+                        </li>
+                        <li><a href="#">Terms of Use</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+	
+	<div id="lagents-filter-panel" class="popover">
+		<div style="background: #31B5D6" class="lagentsItem">Candidate Genes
+		</div>
+		<div style="background: #C6EFF7" class="lagentsItem">
+			<input type="checkbox" name="associatedGenesCheckBox" value="associatedGenes" checked="checked" /> Associated Genes
+		</div>
+		<div style="background: #D63194" class="lagentsItem">
+			<input type="checkbox" name="organismDBCheckBox" value="organism" checked="checked" />Uniprot</div>
+		<div style="background: #FF0000" class="lagentsItem">
+			<input type="checkbox" name="atlasDBCheckBox" value="atlas" checked="checked" />Up Expressions
+		</div>
+		<div style="background: #7BC618" class="lagentsItem">
+			<input type="checkbox" name="atlasDBCheckBox" value="atlas" checked="checked" />Down Expressions
+		</div>
+		<div style="background: #BFBFBF" class="lagentsItem">
+			<input type="checkbox" name="atlasDBCheckBox" value="atlas" checked="checked" />Up-Down Expressions
+		</div>
+		<div style="background: #FF9C4A" class="lagentsItem">
+			<input type="checkbox" name="reactomeDBCheckBox" checked="checked" value="reactome" />Reactome Pathways</div>
+		<div style="background: #FFFF6B" class="lagentsItem">
+			<input type="checkbox" name="chemblDBCheckBox" value="chembl" checked="checked" /> Small Molecules
+		</div>
+		<div style="background: #847308" class="lagentsItem">
+			<input type="checkbox" name="bioModelsDBCheckBox" value="biomodels" checked="checked" />Bio Models</div>
+		<div style="background: #082984" class="lagentsItem">
+			<input type="checkbox" name="bioSamplesDBCheckBox" value="biosamples" checked="checked" />Bio Samples
+		</div>
+	</div>
+	<!-- 
+	<div id="pathway-filter-panel" class="popover">
+		<div class="filter-popover">
+		<input type="radio" name="pathWayOption" value="allPathways"
+								checked="checked" />All Pathways <br /> <br />
+								<input
+								type="radio" name="pathWayOption" value="metabolicPathways" />Metabolic
+	Pathways <br /> <br /> <input type="radio" name="pathWayOption"
+		value="signalingPathways" />Signaling Pathways <br /> <br />
+		</div>
+	</div>
+	-->
+    <!-- jQuery -->
+    <script src="js/jquery.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="js/bootstrap-multiselect.js"></script>
+
+    <!-- Plugin JavaScript -->
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
+    <script src="js/classie.js"></script>
+    <script src="js/cbpAnimatedHeader.js"></script>
+    
+    
+    <script type="text/javascript" src="cytoscapeweb/js/min/json2.min.js"></script>
+	<script type="text/javascript" src="cytoscapeweb/js/min/AC_OETags.min.js"></script>
+	<script type="text/javascript" src="cytoscapeweb/js/min/cytoscapeweb.min.js"></script>
+	<script type="text/javascript" src="jqueryui/jquery-ui.js"></script>
+	<script src="files/jquery.tagsinput.min.js"></script>
+
+	<script type="text/javascript" src="js/bootstrap-tokenfield.js"></script>
+	
+			<script type="text/javascript"  src="js/html2canvas.js"></script>
+		<script type="text/javascript"  src="js/canvas2image.js"></script>
+		<script type="text/javascript"  src="js/base64.js"></script>
+
+    <!-- Contact Form JavaScript -->
+    <script src="js/jqBootstrapValidation.js"></script>
+    <script src="js/contact_me.js"></script>
+
+    <!-- Custom Theme JavaScript -->
+    <script src="js/agency.js"></script>
+	 <script src="js/cmapper.js"></script>
+	
+	
+
+</body>
+
+</html>

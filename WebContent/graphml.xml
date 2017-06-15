@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns 
+http://graphml.graphdrawing.org/xmlns/1.1/graphml.xsd"> 
+<!--Content: List of graphs and data--> 
+<key id="d0" for="node" attr.name="DisplayText" attr.type="string" />
+<key id="d1" for="node" attr.name="NodeType" attr.type="string" />
+<key id="d2" for="node" attr.name="DatabaseName" attr.type="string" />
+<key id="d3" for="edge" attr.name="DisplayURI" attr.type="string" />
+<graph id="G" edgedefault="undirected">
+<node id="P0C9I5"> <data key="d0">http://purl.uniprot.org/uniprot/P0C9I5</data></node>
+<node id="modified_0"> <data key="d0">http://purl.uniprot.org/core/modified</data></node>
+<node id="created_1"> <data key="d0">http://purl.uniprot.org/core/created</data></node>
+<node id="attribution_2"> <data key="d0">http://purl.uniprot.org/core/attribution</data></node>
+<node id="version_3"> <data key="d0">http://purl.uniprot.org/core/version</data></node>
+<node id="classifiedWith_4"> <data key="d0">http://purl.uniprot.org/core/classifiedWith</data></node>
+<node id="existence_5"> <data key="d0">http://purl.uniprot.org/core/existence</data></node>
+<node id="citation_6"> <data key="d0">http://purl.uniprot.org/core/citation</data></node>
+<node id="attribution_7"> <data key="d0">http://purl.uniprot.org/core/attribution</data></node>
+<node id="proteome_8"> <data key="d0">http://purl.uniprot.org/core/proteome</data></node>
+<node id="classifiedWith_9"> <data key="d0">http://purl.uniprot.org/core/classifiedWith</data></node>
+<node id="annotation_10"> <data key="d0">http://purl.uniprot.org/core/annotation</data></node>
+<node id="recommendedName_11"> <data key="d0">http://purl.uniprot.org/core/recommendedName</data></node>
+<node id="attribution_12"> <data key="d0">http://purl.uniprot.org/core/attribution</data></node>
+<node id="seeAlso_13"> <data key="d0">http://www.w3.org/2000/01/rdf-schema#seeAlso</data></node>
+<node id="annotation_14"> <data key="d0">http://purl.uniprot.org/core/annotation</data></node>
+<node id="annotation_15"> <data key="d0">http://purl.uniprot.org/core/annotation</data></node>
+<node id="mnemonic_16"> <data key="d0">http://purl.uniprot.org/core/mnemonic</data></node>
+<node id="type_17"> <data key="d0">http://www.w3.org/1999/02/22-rdf-syntax-ns#type</data></node>
+<node id="reviewed_18"> <data key="d0">http://purl.uniprot.org/core/reviewed</data></node>
+<node id="annotation_19"> <data key="d0">http://purl.uniprot.org/core/annotation</data></node>
+<node id="organism_20"> <data key="d0">http://purl.uniprot.org/core/organism</data></node>
+<node id="classifiedWith_21"> <data key="d0">http://purl.uniprot.org/core/classifiedWith</data></node>
+<node id="sequence_22"> <data key="d0">http://purl.uniprot.org/core/sequence</data></node>
+<node id="seeAlso_23"> <data key="d0">http://www.w3.org/2000/01/rdf-schema#seeAlso</data></node>
+<node id="seeAlso_24"> <data key="d0">http://www.w3.org/2000/01/rdf-schema#seeAlso</data></node>
+<node id="encodedBy_25"> <data key="d0">http://purl.uniprot.org/core/encodedBy</data></node>
+<node id="annotation_26"> <data key="d0">http://purl.uniprot.org/core/annotation</data></node>
+<edge id="e_P0C9I5_0" source="P0C9I5" target="modified_0"><data key="d3">http://purl.uniprot.org/core/modified</data></edge>
+<edge id="e_P0C9I5_1" source="P0C9I5" target="created_1"> <data key="d3">http://purl.uniprot.org/core/created</data></edge>
+<edge id="e_P0C9I5_2" source="P0C9I5" target="attribution_2"> <data key="d3">http://purl.uniprot.org/core/attribution</data></edge>
+<edge id="e_P0C9I5_3" source="P0C9I5" target="version_3"> <data key="d3">http://purl.uniprot.org/core/version</data></edge>
+<edge id="e_P0C9I5_4" source="P0C9I5" target="classifiedWith_4"> <data key="d3">http://purl.uniprot.org/core/classifiedWith</data></edge>
+<edge id="e_P0C9I5_5" source="P0C9I5" target="existence_5"> <data key="d3">http://purl.uniprot.org/core/existence</data></edge>
+<edge id="e_P0C9I5_6" source="P0C9I5" target="citation_6"> <data key="d3">http://purl.uniprot.org/core/citation</data></edge>
+<edge id="e_P0C9I5_7" source="P0C9I5" target="attribution_7"> <data key="d3">http://purl.uniprot.org/core/attribution</data></edge>
+<edge id="e_P0C9I5_8" source="P0C9I5" target="proteome_8"> <data key="d3">http://purl.uniprot.org/core/proteome</data></edge>
+<edge id="e_P0C9I5_9" source="P0C9I5" target="classifiedWith_9"> <data key="d3">http://purl.uniprot.org/core/classifiedWith</data></edge>
+<edge id="e_P0C9I5_10" source="P0C9I5" target="annotation_10"> <data key="d3">http://purl.uniprot.org/core/annotation</data></edge>
+<edge id="e_P0C9I5_11" source="P0C9I5" target="recommendedName_11"> <data key="d3">http://purl.uniprot.org/core/recommendedName</data></edge>
+<edge id="e_P0C9I5_12" source="P0C9I5" target="attribution_12"> <data key="d3">http://purl.uniprot.org/core/attribution</data></edge>
+<edge id="e_P0C9I5_13" source="P0C9I5" target="seeAlso_13"> <data key="d3">http://www.w3.org/2000/01/rdf-schema#seeAlso</data></edge>
+<edge id="e_P0C9I5_14" source="P0C9I5" target="annotation_14"> <data key="d3">http://purl.uniprot.org/core/annotation</data></edge>
+<edge id="e_P0C9I5_15" source="P0C9I5" target="annotation_15"> <data key="d3">http://purl.uniprot.org/core/annotation</data></edge>
+<edge id="e_P0C9I5_16" source="P0C9I5" target="mnemonic_16"> <data key="d3">http://purl.uniprot.org/core/mnemonic</data></edge>
+<edge id="e_P0C9I5_17" source="P0C9I5" target="type_17"> <data key="d3">http://www.w3.org/1999/02/22-rdf-syntax-ns#type</data></edge>
+<edge id="e_P0C9I5_18" source="P0C9I5" target="reviewed_18"> <data key="d3">http://purl.uniprot.org/core/reviewed</data></edge>
+<edge id="e_P0C9I5_19" source="P0C9I5" target="annotation_19"> <data key="d3">http://purl.uniprot.org/core/annotation</data></edge>
+<edge id="e_P0C9I5_20" source="P0C9I5" target="organism_20"> <data key="d3">http://purl.uniprot.org/core/organism</data></edge>
+<edge id="e_P0C9I5_21" source="P0C9I5" target="classifiedWith_21"> <data key="d3">http://purl.uniprot.org/core/classifiedWith</data></edge>
+<edge id="e_P0C9I5_22" source="P0C9I5" target="sequence_22"> <data key="d3">http://purl.uniprot.org/core/sequence</data></edge>
+<edge id="e_P0C9I5_23" source="P0C9I5" target="seeAlso_23"> <data key="d3">http://www.w3.org/2000/01/rdf-schema#seeAlso</data></edge>
+<edge id="e_P0C9I5_24" source="P0C9I5" target="seeAlso_24"> <data key="d3">http://www.w3.org/2000/01/rdf-schema#seeAlso</data></edge>
+<edge id="e_P0C9I5_25" source="P0C9I5" target="encodedBy_25"> <data key="d3">http://purl.uniprot.org/core/encodedBy</data></edge>
+<edge id="e_P0C9I5_26" source="P0C9I5" target="annotation_26"> <data key="d3">http://purl.uniprot.org/core/annotation</data></edge>
+</graph>
+</graphml>

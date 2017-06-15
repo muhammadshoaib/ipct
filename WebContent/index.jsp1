@@ -1,0 +1,862 @@
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+	pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>Gene-centric connectivity mapper of EBI RDF resource</title>
+
+<script type="text/javascript" src="jquery-1.11.2.min.js"></script>
+<script type="text/javascript" src="cytoscapeweb/js/min/json2.min.js"></script>
+<script type="text/javascript"
+	src="cytoscapeweb/js/min/AC_OETags.min.js"></script>
+<script type="text/javascript"
+	src="cytoscapeweb/js/min/cytoscapeweb.min.js"></script>
+<script type="text/javascript" src="jqueryui/jquery-ui.js"></script>
+<link href="jqueryui/jquery-ui.css" rel="stylesheet" />
+
+<script src="files/jquery.multiselect.js"></script>
+<link  rel="stylesheet" type="text/css" href="files/jquery.multiselect.css">
+
+<script src="files/jquery.tagsinput.min.js"></script>
+<link rel="stylesheet" type="text/css"
+	href="files/jquery.tagsinput.min.css" />
+
+<script type="text/javascript">
+	window.onload = function() {
+
+		// id of Cytoscape Web container div
+
+		var div_id = "cytoscapeweb";
+
+		// initialization options
+		var options = {
+			swfPath : "cytoscapeweb/swf/CytoscapeWeb",
+			flashInstallerPath : "cytoscapeweb/swf/playerProductInstall"
+		};
+
+		var exportoptions = {
+
+		}
+
+		var vis = new org.cytoscapeweb.Visualization(div_id, options);
+
+		// callback when Cytoscape Web has finished drawing
+		vis
+				.ready(function() {
+
+					//vis.Pdf();
+					//vis.exportNetwork('pdf', "~/downloadnetwork");
+					// add a listener for when nodes and edges are clicked
+					vis.addListener("click", "nodes", function(event) {
+						handle_click(event);
+						return;
+					});
+					vis.addListener("dblclick", "nodes", function(event) {
+						handle_dbl_click(event);
+						return;
+					});
+
+					function handle_click(event) {
+
+						var target = event.target;
+						//alert(event.target);
+						clear();
+						//print("event.group = " + event.group);
+						var keys = [ "id", "label", "Full Name",
+								"Database Name", "URL", "Details" ];
+						var displaykeys = [ "Identifier", "Label", "Full Name",
+								"Database Name", "URL", "Details" ];
+						//alert(target.data + " " + keys.length);
+						//alert(target.data["Database Name"] + "," + target.data["id"]);
+						var htmlOutput = "<table>";
+						for (i = 0; i < keys.length; i++) {
+							var variable_name = keys[i];
+
+							var variable_value = target.data[variable_name];
+							if (variable_name == "URL"
+									&& target.data[i] != null) {
+								variable_value = "<a href=\""+target.data[i]+"\" target=_blank>"
+										+ target.data[i] + "</a>";
+							}
+
+							if (variable_value != null) {
+								htmlOutput = "<div><div style='width:150px; float:left;'>"
+										+ displaykeys[i]
+										+ " : </div><div style='width:350px; float:left;'>"
+										+ variable_value.replace(/,/g, "<br />") + "</div><div style='clear:both'></div></div>";
+								print(htmlOutput);
+								//alert(htmlOutput); 
+							}
+						}
+						event.stopPropagation();
+					}
+
+					function handle_dbl_click(event) {
+
+						var target = event.target;
+						//alert(target.data["Database Name"] + "," + target.data["id"]);
+						if (target.data["Database Name"] == 'associatedGenes' 
+								|| target.data["Database Name"] == 'gene') {
+							//alert(target.data["Database Name"] + "," + target.data["id"]);
+							if($('input[name=gene_molecule_op]:checked').val() == "gene") { 
+								$("#genesList").addTag(target.data["id"]); 
+								return; 
+							}
+							$("input[name=gene_molecule_op][value ='gene']")
+									.prop('checked', true);
+							$("#genesList").importTags(target.data["id"]);
+
+						} else {
+
+						}
+						$('input[name=gene_molecule_op]:checked').button(
+								"refresh");
+						//alert($('input[name=gene_molecule_op]:checked').val());
+						GetGeneList();
+
+						//alert(target.data["Database Name"] + "," + target.data["id"]);
+
+						event.stopPropagation();
+					}
+
+					function clear() {
+						document.getElementById("note").innerHTML = "";
+					}
+
+					function print(msg) {
+						document.getElementById("note").innerHTML += "<p>"
+								+ msg + "</p>";
+					}
+				});
+
+
+		function LinkHoverLinkSearch() {
+			$('.listhyperlinks').click(function(event) {
+				var geneNames = $('#genesList').val();
+				//alert(geneNames);
+				// alert(geneNames.indexOf(event.target.id));
+				/*
+				if(geneNames.indexOf(event.target.id) == -1) { 
+					geneNames = geneNames + event.target.id + ";";
+					$('#genesList').val(geneNames);
+				} */
+				if ($('#genesList').tagExist(event.target.id) == false) {
+					$('#genesList').addTag(event.target.id);
+				}
+
+				//$('#genesList').
+
+				//here you can also do all sort of things 
+			});
+		}
+
+		function GetGeneList(triggeroption) {
+			var val = $("#INDEX_A").val() + $("#INDEX_B").val()
+					+ $("#INDEX_C").val();
+			//alert(val);
+			$("#INPUT_LIST").html(val);
+
+			var gene_moleculeop = $('input[name=gene_molecule_op]:checked')
+					.val();
+
+			var idata = "indexletter=" + val + "&listType=" + gene_moleculeop;
+			//alert(idata);
+			$.ajax({
+				url : "GetList",
+				data : idata,
+				context : document.body,
+				success : function(result) {
+					//alert(result); 
+					$("#INPUT_LIST").html(result);
+					//alert('hello world');
+					LinkHoverLinkSearch();
+
+				}
+			});
+
+		}
+
+		var xml = null;
+
+		$('#INDEX_A').change(function(event, ui) {
+			GetGeneList();
+		});
+		$('#INDEX_B').change(function() {
+			GetGeneList();
+		});
+		$('#INDEX_C').change(function() {
+			GetGeneList();
+		});
+
+		$("#geneReDrawButton").click(function() {
+			if (xml != null) {
+
+				var draw_options = {
+					// your data goes here
+					network : xml,
+					layout : "ForceDirected",
+					edgeLabelsVisible : true,
+					visualStyle : visual_style,
+					panToCenter : true,
+					panZoomControlPosition : 'bottomLeft',
+				// hide pan zoom
+				// panZoomControlVisible: false 
+				};
+				vis.draw(draw_options);
+			}
+
+		});
+
+		$("#geneSubmitButton")
+				.click(
+						function(event) {
+							$("#geneSubmitButton").attr("disabled", "disabled");
+							//alert('hello world');
+							$("#cytoscapeweb").text('');
+
+							var databases = '';
+
+							var gene_moleculeop = $(
+									'input[name=gene_molecule_op]:checked')
+									.val();
+							//alert(gene_moleculeop); 
+
+							if ($('input[name=atlasDBCheckBox]').is(':checked')) {
+								databases = databases + 'atlas;';
+							}
+							if ($('input[name=associatedGenesCheckBox]').is(
+									':checked')) {
+								databases = databases + "associatedGenes";
+							}
+							if ($('input[name=reactomeDBCheckBox]').is(
+									':checked')) {
+								databases = databases + 'reactome;';
+							}
+							if ($('input[name=chemblDBCheckBox]')
+									.is(':checked')) {
+								databases = databases + 'chembl;';
+							}
+							if ($('input[name=bioModelsDBCheckBox]').is(
+									':checked')) {
+								databases = databases + "biomodels;"
+							}
+							if ($('input[name=bioSamplesDBCheckBox]').is(
+									':checked')) {
+								databases = databases + "biosamples;"
+							}
+							if ($('input[name=organismDBCheckBox]').is(
+									':checked')) {
+								databases = databases + "organism;"
+							}
+
+							var outputType = $(
+									'input[name=outputOption]:checked').val();
+
+							var graphType = $(
+									'input[name=graphOptions]:checked').val();
+
+							var geneNames = $('#genesList').val();
+							var organisim = $("#taxonomicOrganisims").val();
+							var organName = $("#atlasOrgans").val();
+
+							var pathwayType = $(
+									'input[name=pathWayOption]:checked').val();
+					
+
+							var idata = 'inputType=' + gene_moleculeop
+									+ '&genesList=' + geneNames + '&databases='
+									+ databases + "&output=" + outputType
+									+ "&graphType=" + graphType
+									+ "&pathwayType=" + pathwayType + "&taxn="
+									+ organisim + "&organName=" + organName
+									+ "&graphOption=graphml";
+							console.log(idata)
+							//alert(idata);
+
+							if (outputType == "DownloadGraphML") {
+								window.open("GeneSearch?" + idata);
+								return;
+							}
+
+							////alert(databases);
+
+							$.ajax({
+								url : "GeneSearch",
+								data : idata,
+								success : function(result) {
+									// alert(result); 
+
+									if (result == 'NO INPUT GIVEN') {
+										alert("Please Input valid Gene ID");
+										$("#geneSubmitButton").removeAttr(
+												"disabled");
+										return;
+									}
+
+									xml = result;
+									/* 
+									xml = {dataSchema: {
+									    nodes: [ { name: "label", type: "string" },
+									             { name: "group", type: "string" }
+									        ],
+									    edges: [ { name: "label", type: "string" }
+									           
+									    ]
+									}, data: result}; 
+									alert(xml)
+									 */
+
+									var draw_options = {
+										// your data goes here
+										network : xml,
+										layout : "ForceDirected",
+										edgeLabelsVisible : true,
+										visualStyle : visual_style,
+										panToCenter : true,
+										panZoomControlPosition : 'bottomLeft',
+									// hide pan zoom
+									// panZoomControlVisible: false 
+									};
+									//alert(xml);
+
+									vis.draw(draw_options);
+
+									$("#geneSubmitButton").removeAttr(
+											"disabled");
+
+								}
+							});
+
+						});
+
+		var visual_style = {
+
+			nodes : {
+				size : 50,
+				color : {
+					defaultValue : "#FFF",
+					discreteMapper : {
+						attrName : "Database Name",
+						entries : [ {
+							attrValue : "associatedGenes",
+							value : "#C6EFF7"
+						}, {
+							attrValue : "gene",
+							value : "#31B5D6"
+						}, {
+							attrValue : "uniprot",
+							value : "#D63194"
+						}, {
+							attrValue : "atlas",
+							value : "#BFBFBF"
+						}, {
+							attrValue : "reactome",
+							value : "#FF9C4A"
+						}, {
+							attrValue : "chembl",
+							value : "#FFFF6B"
+						}, {
+							attrValue : "biomodels",
+							value : "#847308"
+						}, {
+							attrValue : "atlas_UP_DOWN",
+							value : "#BFBFBF"
+						}, {
+							attrValue : "atlas_DOWN_UP",
+							value : "#BFBFBF"
+						}, {
+							attrValue : "atlas_UP",
+							value : "#FF0000"
+						}, {
+							attrValue : "atlas_DOWN",
+							value : "#7BC618"
+						}, {
+							attrValue : "biosamples",
+							value : "#082984"
+						} ]
+					}
+				},
+				labelHorizontalAnchor : "center", 
+				shape : {
+					defaultValue : "ELLIPSE",
+					discreteMapper : {
+						attrName : "Database Name",
+						entries : [ {
+							attrValue : "associatedGenes",
+							value : "PARALLELOGRAM"
+						}, {
+							attrValue : "gene",
+							value : "ELLIPSE"
+						}, {
+							attrValue : "uniprot",
+							value : "DIAMOND"
+						}, {
+							attrValue : "atlas",
+							value : "ELLIPSE"
+						}, {
+							attrValue : "reactome",
+							value : "ROUNDRECT"
+						}, {
+							attrValue : "chembl",
+							value : "RECTANGLE"
+						}, {
+							attrValue : "biomodels",
+							value : "HEXAGON"
+						}, {
+							attrValue : "atlas_UP_DOWN",
+							value : "ELLIPSE"
+						}, {
+							attrValue : "atlas_DOWN_UP",
+							value : "ELLIPSE"
+						}, {
+							attrValue : "atlas_UP",
+							value : "TRIANGLE"
+						}, {
+							attrValue : "atlas_DOWN",
+							value : "VEE"
+						}, {
+							attrValue : "biosamples",
+							value : "ELLIPSE"
+						} ]
+					}
+				},
+				height : {
+					discreteMapper : {
+						attrName : "Database Name",
+						entries : [  {
+							attrValue : "associatedGenes",
+							value : 24
+						}, {
+							attrValue : "reactome",
+							value : 24
+						}, {
+							attrValue : "chembl",
+							value : 24
+						} ] 
+					}
+				}
+			},
+			edges : {
+				width : 2,
+				color : "#222"
+			}
+		};
+
+		$.fn.center = function() {
+			return this.css({
+				'left' : ($(window).width()) - $(this).width() - 20,
+				'top' : ($(window).height() / 2) - $(this).height() / 2,
+				'position' : 'fixed'
+			});
+		};
+		$('#lagents').center();
+		//alert("Hello World");
+		$("button").button();
+		//$( "#gene_or_smallmolecule").buttonset();
+
+		$("#INDEX_A").selectmenu({
+			change : function(event, ui) {
+				GetGeneList();
+			}
+		}).selectmenu("menuWidget").addClass("overflow");
+		$("#INDEX_B").selectmenu({
+			change : function(event, ui) {
+				GetGeneList();
+			}
+		}).selectmenu("menuWidget").addClass("overflow");
+		;
+		$("#INDEX_C").selectmenu({
+			change : function(event, ui) {
+				GetGeneList();
+			}
+		}).selectmenu("menuWidget").addClass("overflow");
+		;
+
+		$('input[name=gene_molecule_op]').change(function() {
+			$('#genesList').importTags('');
+			GetGeneList();
+		});
+
+		$('#genesList').tagsInput({
+			'delimiter' : [ ';' ],
+			'height' : '33px',
+			'width' : '500px',
+			'defaultText' : ''
+		});
+
+		GetGeneList();
+	};
+
+	$(function() {
+		$("#geneOrSmallMolecule").buttonset();
+	});
+
+	function TooglleAdvanceOptions() {
+		$("#advanceFilteringOptions").toggle();
+		if ($("#advanceFilteringOptions").is(":visible")) {
+			$("#basicAdvanceSearchToggler").html("Basic Search");
+			$.ajax({
+				url : "GetOrgans",
+				context : document.body,
+				success : function(result) {
+
+					$("#atlasOrgans").html(result);
+					$("#atlasOrgans").selectmenu().selectmenu("menuWidget")
+							.addClass("overflow");
+					//alert('hello world');
+
+				}
+			});
+
+			$.ajax({
+				url : "getOrganismList",
+				context : document.body,
+				success : function(result) {
+
+					$("#taxonomicOrganisims").html(result);
+					$("#taxonomicOrganisims").multiselect();  // .selectmenu(
+							 // "menuWidget").addClass("overflow");
+					//alert('hello world');
+
+				}
+			});
+
+		} else {
+			$("#basicAdvanceSearchToggler").html("Advance Search");
+		}
+
+	}
+</script>
+
+<style>
+* {
+	margin: 0;
+	padding: 0;
+	font-family: Helvetica, Arial, Verdana, sans-serif;
+}
+
+.overflow {
+	height: 300px;
+}
+
+html, body {
+	/* height: 100%; */
+	width: 100%;
+	padding: 0;
+	margin: 0;
+}
+
+body {
+	line-height: 1.5;
+	color: #000000;
+	font-size: 14px;
+}
+
+#wrap {
+	border: solid 1px #888;
+	width: 1200px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+#header {
+	width: 1200px;
+	text-align: center;
+	padding-top: 30px;
+	padding-bottom: 30px;
+	margin-left: auto;
+	margin-right: auto;
+	background-color: #030;
+	font-size: 24px;
+	color: #9F3;
+	font-weight: bold;
+}
+
+#leftmenu {
+	width: 170px;
+	background-color: #030;
+	float: left;
+	padding-left: 20px;
+	padding-right: 10px;
+	padding-top: 10px;
+	height: auto;
+}
+
+#leftMenuList {
+	height: 400px;
+	overflow: auto;
+	width: 150px;
+	padding-bottom: 20px;
+	margin-top: 10px;
+	margin-bottom: 20px;
+}
+
+#leftMenuList a {
+	color: #fff;
+	text-decoration: none;
+	display: block;
+	margin-top: 1px;
+	margin-bottom: 2px;
+}
+
+#leftMenuList a:hover {
+	text-decoration: underline;
+	font-weight: bold;
+}
+
+#mainBody {
+	width: 1000px;
+	float: left;
+}
+
+#inputbox {
+	width: 930px;
+	padding-top: 30px;
+	padding-bottom: 30px;
+	padding-left: 20px;
+	padding-right: 50px;
+	margin-left: auto;
+	margin-right: auto;
+	font-weight: bold;
+	background: #CCC;
+	float: left;
+}
+
+#footer {
+	width: 1200px;
+	text-align: center;
+	padding-top: 30px;
+	padding-bottom: 30px;
+	margin-left: auto;
+	margin-right: auto;
+	background-color: #030;
+	font-size: 14px;
+	color: #9F3;
+	font-weight: bold;
+}
+/* The Cytoscape Web container must have its dimensions set. */
+#cytoscapeweb {
+	width: 100%;
+	height: 500px;
+	margin-left: auto;
+	margin-right: auto;
+	overflow: hidden;
+	/* position: relative; */
+}
+
+.submitbuttion {
+	padding-left: 10px;
+	padding-right: 10px;
+	padding-top: 5px;
+	padding-bottom: 5px;
+}
+
+#note {
+	width: 960px;
+	margin-left: auto;
+	margin-right: auto;
+	height: 180px;
+	background-color: #f0f0f0;
+	padding: 20px;
+	overflow: auto;
+}
+
+.lagentsItem {
+	display: block;
+	padding-left: 10px;
+	padding-right: 10px;
+	padding-top: 5px;
+	padding-bottom: 5px;
+}
+
+p {
+	padding: 0 0.5em;
+	margin: 0;
+}
+
+.leftfloat {
+	float: left;
+}
+
+.rightFloat {
+	float: right;
+}
+
+p:first-child {
+	padding-top: 0.5em;
+}
+</style>
+</head>
+
+<body>
+	<div id="wrap">
+		<div id="lagents" style="float: right;">
+			<div style="background: #31B5D6" class="lagentsItem">Candidate
+				Genes</div>
+			<div style="background: #C6EFF7" class="lagentsItem">Associated
+				Genes</div>
+			<div style="background: #D63194" class="lagentsItem">Uniprot</div>
+			<div style="background: #FF0000" class="lagentsItem">Up
+				Expressions</div>
+			<div style="background: #7BC618" class="lagentsItem">Down
+				Expressions</div>
+			<div style="background: #BFBFBF" class="lagentsItem">Up-Down
+				Expressions</div>
+			<div style="background: #FF9C4A" class="lagentsItem">Reactome
+				Pathways</div>
+			<div style="background: #FFFF6B" class="lagentsItem">Small
+				Molecules</div>
+			<div style="background: #847308" class="lagentsItem">Bio Models</div>
+			<div style="background: #082984" class="lagentsItem">Bio
+				Samples</div>
+		</div>
+		<div id="header">Gene-centric connectivity mapper of EBI RDF
+			resource</div>
+		<div>
+			<div id="leftmenu">
+
+				<select id="INDEX_A" style="width: 150px;">
+					<%
+						for (int i = 'A'; i <= 'Z'; i++) {
+							out.println("<option value=\"" + (char) i + "\">" + (char) i + "</option>");
+						}
+					%>
+				</select><br /> <select id="INDEX_B" style="width: 150px;">
+					<option value="_"></option>
+					<%
+						for (int i = 'A'; i <= 'Z'; i++) {
+							out.println("<option value=\"" + (char) i + "\">" + (char) i + "</option>");
+						}
+					%>
+				</select> <br /> <select id="INDEX_C" style="width: 150px;">
+					<option value="_"></option>
+					<%
+						for (int i = 'A'; i <= 'Z'; i++) {
+							out.println("<option value=\"" + (char) i + "\">" + (char) i + "</option>");
+						}
+					%>
+				</select><br />
+				<div id="leftMenuList">
+					<div id="INPUT_LIST">&nbsp;</div>
+				</div>
+
+
+				<div style="margin-bottom: 20px;">&nbsp;</div>
+			</div>
+			<div id="mainBody">
+				<div id="inputbox">
+					<div style="float: left; width: 230px;">
+						<div id="geneOrSmallMolecule">
+							<input type="radio" name="gene_molecule_op" value="gene"
+								checked="checked" id="geneRadioButton" /><label
+								for="geneRadioButton">Gene</label> <input type="radio"
+								name="gene_molecule_op" value="molecule"
+								id="meleculeRadioButton" /> <label for="meleculeRadioButton">Small
+								Molecule</label>
+						</div>
+						<div
+							style="float: left; width: 210px; padding-top: 20px; padding-right: 10px;">Enter
+							List of Genes / Small Molecule Seperated by ";"&nbsp; &nbsp;
+							&nbsp;</div>
+					</div>
+					<div style="float: left; width: 570px;">
+						<div style="display: block; padding-bottom: 10px;">
+							<input type="text" name="genesList" id="genesList" size="60"
+								style="padding: 10px; font-size: 14px;" />
+						</div>
+						<div style="display: block; padding-bottom: 20px;"
+							id="databasesOptions">
+							<div class="leftfloat">
+								<input type="checkbox" name="associatedGenesCheckBox"
+									value="associatedGenes" checked="checked" />Associated Genes
+								&nbsp;&nbsp;
+							</div>
+							<div class="leftfloat">
+								<input type="checkbox" name="organismDBCheckBox"
+									value="organism" checked="checked" />Taxonomic Organism
+								&nbsp;&nbsp;
+							</div>
+							<div class="leftfloat">
+								<input type="checkbox" name="atlasDBCheckBox" value="atlas"
+									checked="checked" />Atlas Database &nbsp;&nbsp;
+							</div>
+							<div class="leftfloat">
+								<input type="checkbox" name="reactomeDBCheckBox"
+									checked="checked" value="reactome" />Reactome Database
+								&nbsp;&nbsp;
+							</div>
+							<div class="leftfloat">
+								<input type="checkbox" name="chemblDBCheckBox" value="chembl"
+									checked="checked" />ChEMBL Database &nbsp;&nbsp;
+							</div>
+							<div class="leftfloat">
+								<input type="checkbox" name="bioModelsDBCheckBox"
+									value="biomodels" checked="checked" />BioModels Database
+								&nbsp;&nbsp;
+							</div>
+							<div class="leftfloat">
+								<input type="checkbox" name="bioSamplesDBCheckBox"
+									value="biosamples" checked="checked" />BioSamples Database
+								&nbsp;&nbsp;
+							</div>
+							<div style="clear: both;"></div>
+						</div>
+						<div class="rightFloat"
+							style="padding-right: 30px; padding-bottom: 20px; display: block; width: 500px; text-align: right;">
+							<a href="javascript:TooglleAdvanceOptions();"
+								id="basicAdvanceSearchToggler">Advance Options</a>
+						</div>
+
+						<div id="advanceFilteringOptions" style="display: none;">
+
+							<div style="padding-bottom: 20px; display: block;">
+								Select Taxnomic Organism <select name="taxonomicOrganisims" multiple="multiple"
+									id="taxonomicOrganisims" style="width: 400px;">
+
+								</select>
+							</div>
+
+							<div style="padding-bottom: 20px; display: block;">
+								Select Organ Part (For Atlas Expressions) <select
+									name="atlasOrgans" id="atlasOrgans" style="width: 400px;">
+								</select>
+							</div>
+
+							<input type="radio" name="pathWayOption" value="allPathways"
+								checked="checked" />All Pathways &nbsp; &nbsp; <input
+								type="radio" name="pathWayOption" value="metabolicPathways" />Metabolic
+							Pathways &nbsp; &nbsp; <input type="radio" name="pathWayOption"
+								value="signalingPathways" />Signaling Pathways <br /> <br />
+
+							<input type="radio" name="outputOption" value="ViewGraph"
+								checked="checked" />View Graph &nbsp; &nbsp; <input
+								type="radio" name="outputOption" value="DownloadGraphML" />Download
+							GraphML <br /> <br /> <input type="radio" name="graphOptions"
+								value="detailed" checked="checked" />All Connections
+							&nbsp; &nbsp; <input type="radio" name="graphOptions"
+								value="summerized" />Shared Connections
+						</div>
+					</div>
+					<div style="float: left; width: 100px;">
+						<button class="submitbuttion" id="geneSubmitButton">Search</button>
+						<br /> <br />
+						<button class="submitbuttion" id="geneReDrawButton">Redraw</button>
+					</div>
+					<div style="clear: both;"></div>
+				</div>
+				<div id="cytoscapeweb" style="width: 1000px;">&nbsp; &nbsp;.</div>
+
+				<div id="note">
+					<p>Click nodes or edges.</p>
+				</div>
+
+
+			</div>
+			<div style="clear: both;"></div>
+			<div id="footer">Center of Cancer Genome Discovery Asan Medical
+				Center</div>
+			<div style="clear: both;"></div>
+		</div>
+	</div>
+</body>

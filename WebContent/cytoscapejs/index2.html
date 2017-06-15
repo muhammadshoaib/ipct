@@ -1,0 +1,182 @@
+<!DOCTYPE>
+
+<html>
+
+<head>
+<title>cytoscape-dagre.js demo</title>
+
+<meta name="viewport"
+	content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
+
+<script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
+<script
+	src="http://cytoscape.github.io/cytoscape.js/api/cytoscape.js-latest/cytoscape.min.js"></script>
+
+<!-- for testing with local version of cytoscape.js -->
+<!--<script src="../cytoscape.js/build/cytoscape.js"></script>-->
+
+<script
+	src="https://cdn.rawgit.com/cpettitt/dagre/v0.7.4/dist/dagre.min.js"></script>
+<script
+	src="https://cdn.rawgit.com/cytoscape/cytoscape.js-dagre/1.1.2/cytoscape-dagre.js"></script>
+<script
+	src="https://cdn.rawgit.com/cytoscape/cytoscape.js-spread/1.0.9/cytoscape-spread.js"></script>
+	    <script src="https://cdn.rawgit.com/cytoscape/cytoscape.js-cose-bilkent/1.0.5/cytoscape-cose-bilkent.js"></script>
+	
+<script src="./graph_style_json.js"></script>
+<script src="./html2canvas.js"></script>
+<script src="./canvas2image.js"></script>
+<script src="./base64.js"></script>
+
+<script src="./arbor.js"></script>
+<script src="cytoscape-arbor.js"></script>
+
+<script src="https://cdn.rawgit.com/dhotson/springy/2.7.1/springy.js"></script>
+		<script src="./cytoscape-springy.js"></script>
+
+
+
+<style>
+body {
+	font-family: helvetica;
+	font-size: 14px;
+}
+
+#cy {
+	width: 60%;
+	height: 70%;
+	position: absolute;
+	left: 20%;
+	top: 15%;
+	z-index: 999;
+}
+
+h1 {
+	opacity: 0.5;
+	font-size: 1em;
+}
+</style>
+
+<script>
+			$(function(){
+				  $.ajax({
+					    url: "/cmapperbeta/GeneSearch?" +
+					    		"inputType=gene&genesList=CTNNB1&" + 
+					    		"databases=atlas;associatedGenesreactome;chembl;biomodels;biosamples;organism;&" +
+					    		"output=ViewGraph&" +
+					    		"graphType=detailed&" +
+					    		"pathwayType=allPathways&" +
+					    		"taxn=null&" +
+					    		"organName=null&" +
+					    		"graphOption=json", // wine-and-cheese.json
+					    type: 'GET',
+					    dataType: 'json'
+					    
+					  }).done(function(data) {
+						  alert("HELLO WORLD")
+
+					     var graphP = {}; 
+						  nodes = []; 
+							//console.log(JSON.stringify(myjson)); 
+							for (node in data.nodes) {
+								nodes.push({data : data.nodes[node] })
+							}
+							edges = []; 
+							//console.log(JSON.stringify(myjson)); 
+							for (node in data.edges) {
+								edges.push({data : data.edges[node] })
+							}
+							
+							graphP["elements"] = {}; 
+							graphP["elements"]["nodes"] = nodes;
+							graphP["elements"]["edges"] = edges;
+
+							alert(Object.keys(graphP.elements).length);
+							console.info(JSON.stringify(graphP))
+
+							var cy = window.cy = cytoscape({
+								container: document.getElementById('cy'),
+								
+								style: style_json,
+								elements: graphP.elements,
+								
+								boxSelectionEnabled: false,
+								autounselectify: false,
+	/*
+								layout: {
+									name: 'cose',
+									gravity             : -250, 
+									nestingFactor       : 5, 
+									initialTemp         : 1000, 
+									minTemp             : 1, 
+									numIter             : 10000, 
+									edgeElasticity      : 250
+								},
+*/
+								layout: {
+									name: 'cose',
+									gravity             : -200, 
+									nestingFactor       : 0.01, 
+									initialTemp         : 10000, 
+									minTemp             : 1, 
+									numIter             : 10000, 
+									edgeElasticity      : 250, 
+									
+								},
+								
+							});
+						  
+					  });
+				  
+				  
+				
+			//console.log(JSON.stringify(myjson)); 
+			
+				
+				
+				/*
+				var image = document.createElement('img');
+				image.src= png64;
+				alert(img)
+				
+				var a = $("<a>")
+					.attr("href", image)
+					.attr("download", "img.png")
+					.appendTo("body");
+
+				a[0].click();
+
+				a.remove();
+				*/
+				
+				$("#btnSave").click(function() { 
+					html2canvas($("#cy"), {
+						onrendered: function(canvas) {
+							theCanvas = canvas;
+							document.body.appendChild(canvas);
+
+							// Convert and download as image 
+							Canvas2Image.saveAsPNG(canvas); 
+							//$("#img-out").append(canvas);
+							// Clean up 
+							document.body.removeChild(canvas);
+						}
+					});
+				});
+
+			});
+		</script>
+</head>
+
+<body>
+	<h1>cytoscape-dagre demo</h1>
+	<div style="z-index: 10000;">
+		<input type="button" id="btnSave" value="Save PNG" />
+	</div>
+	<div id="cy"></div>
+
+
+
+</body>
+
+</html>

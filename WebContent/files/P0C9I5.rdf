@@ -1,0 +1,177 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<rdf:RDF xmlns="http://purl.uniprot.org/core/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:owl="http://www.w3.org/2002/07/owl#" xmlns:skos="http://www.w3.org/2004/02/skos/core#" xmlns:bibo="http://purl.org/ontology/bibo/" xmlns:foaf="http://xmlns.com/foaf/0.1/" xmlns:void="http://rdfs.org/ns/void#" xmlns:sd="http://www.w3.org/ns/sparql-service-description#" xmlns:faldo="http://biohackathon.org/resource/faldo#">
+<owl:Ontology rdf:about="">
+<owl:imports rdf:resource="http://purl.uniprot.org/core/"/>
+</owl:Ontology>
+<rdf:Description rdf:about="http://purl.uniprot.org/uniprot/P0C9I5">
+<rdf:type rdf:resource="http://purl.uniprot.org/core/Protein"/>
+<reviewed rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</reviewed>
+<created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2009-05-05</created>
+<modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2015-01-07</modified>
+<version rdf:datatype="http://www.w3.org/2001/XMLSchema#int">5</version>
+<mnemonic>1108L_ASFWA</mnemonic>
+<citation rdf:resource="http://purl.uniprot.org/SHA-384/B5145DE27841CF527AE38DEA8EB15E3AA2FA765422D41CEBCAC3F289EFD0A72092BF3AF0AC05000FA2EC625B0D57B07F" rdf:ID="_503043394935002"/>
+<rdfs:seeAlso rdf:resource="#_503043394935003"/>
+<rdfs:seeAlso rdf:resource="http://purl.uniprot.org/interpro/IPR004848"/>
+<rdfs:seeAlso rdf:resource="http://purl.uniprot.org/pfam/PF01639" rdf:ID="_503043394935004"/>
+<recommendedName rdf:resource="http://purl.uniprot.org/SHA-384/2DB3C90960F8159D530AF68263CEA94966D927B6CBA687A3BE2C420559C0A75E8B9C77339FDBD7451CC4E63F7BB07164"/>
+<organism rdf:resource="http://purl.uniprot.org/taxonomy/561444"/>
+<encodedBy rdf:resource="#_503043394935006"/>
+<annotation rdf:resource="http://purl.uniprot.org/SHA-384/3321257FC5AC9939663C14A4BA2A2068E49930FEF976288437260FFDCE73B0F0915520E68DCCDC3942EC391020AF922C"/>
+<annotation rdf:resource="http://purl.uniprot.org/SHA-384/F2B7966777F370F0CB09ED1FD58B1816956AA25399F473C78E553F394E9F2B14E9EDDCF5FD03ADFD8EAC586BFCC5378F"/>
+<annotation rdf:resource="http://purl.uniprot.org/SHA-384/4A77D419CD813632CD5E0BECDA26BD14B0B620B04E7C61655133213EFD298002977389D9DC019616BB7CA77F0A6196E3" rdf:ID="_50304339493500E"/>
+<annotation rdf:resource="http://purl.uniprot.org/annotation/PRO_0000373207"/>
+<annotation rdf:resource="http://purl.uniprot.org/SHA-384/B606999C2EB3B80CA45A50634AF3F9DD387094DB55FF82F8A6457FDD3F35BF8E584FA94935680587485E6371F3B736E9" rdf:ID="_5030433949350013"/>
+<existence rdf:resource="http://purl.uniprot.org/core/Inferred_from_Homology_Existence"/>
+<classifiedWith rdf:resource="http://purl.uniprot.org/keywords/181"/>
+<classifiedWith rdf:resource="http://purl.uniprot.org/keywords/325"/>
+<classifiedWith rdf:resource="http://purl.uniprot.org/keywords/732"/>
+<sequence rdf:resource="http://purl.uniprot.org/isoforms/P0C9I5-1"/>
+<attribution rdf:resource="#_503043394935009"/>
+<attribution rdf:resource="#_5030433949350010"/>
+<attribution rdf:resource="#_50304339493500C"/>
+<proteome rdf:resource="http://purl.uniprot.org/proteomes/UP000000858#Genome"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://purl.uniprot.org/SHA-384/B5145DE27841CF527AE38DEA8EB15E3AA2FA765422D41CEBCAC3F289EFD0A72092BF3AF0AC05000FA2EC625B0D57B07F">
+<rdf:type rdf:resource="http://purl.uniprot.org/core/Submission_Citation"/>
+<title>African swine fever virus genomes.</title>
+<author>Kutish G.F.</author>
+<author>Rock D.L.</author>
+<date rdf:datatype="http://www.w3.org/2001/XMLSchema#gYearMonth">2003-03</date>
+<submittedTo>EMBL/GenBank/DDBJ</submittedTo>
+</rdf:Description>
+<rdf:Description rdf:about="#_503043394935002">
+<rdf:type rdf:resource="http://purl.uniprot.org/core/Citation_Statement"/>
+<scope>NUCLEOTIDE SEQUENCE [LARGE SCALE GENOMIC DNA]</scope>
+</rdf:Description>
+<rdf:Description rdf:about="#_503043394935003">
+<rdf:type rdf:resource="http://purl.uniprot.org/core/Nucleotide_Resource"/>
+<database rdf:resource="http://purl.uniprot.org/database/EMBL"/>
+<locatedOn rdf:resource="http://purl.uniprot.org/embl/AY261366"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://purl.uniprot.org/embl/AY261366">
+<rdf:type rdf:resource="http://purl.uniprot.org/core/Genomic_DNA"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://purl.uniprot.org/interpro/IPR004848">
+<rdf:type rdf:resource="http://purl.uniprot.org/core/Resource"/>
+<database rdf:resource="http://purl.uniprot.org/database/InterPro"/>
+<rdfs:comment>V110_vir</rdfs:comment>
+</rdf:Description>
+<rdf:Description rdf:about="http://purl.uniprot.org/pfam/PF01639">
+<rdf:type rdf:resource="http://purl.uniprot.org/core/Resource"/>
+<database rdf:resource="http://purl.uniprot.org/database/Pfam"/>
+<rdfs:comment>v110</rdfs:comment>
+</rdf:Description>
+<rdf:Description rdf:about="#_503043394935004">
+<rdf:type rdf:resource="http://purl.uniprot.org/core/Domain_Assignment_Statement"/>
+<hits rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</hits>
+</rdf:Description>
+<rdf:Description rdf:about="http://purl.uniprot.org/SHA-384/2DB3C90960F8159D530AF68263CEA94966D927B6CBA687A3BE2C420559C0A75E8B9C77339FDBD7451CC4E63F7BB07164">
+<rdf:type rdf:resource="http://purl.uniprot.org/core/Structured_Name"/>
+<fullName>Protein MGF 110-8L</fullName>
+</rdf:Description>
+<rdf:Description rdf:about="#_503043394935006">
+<rdf:type rdf:resource="http://purl.uniprot.org/core/Gene"/>
+<locusName>War-017</locusName>
+</rdf:Description>
+<rdf:Description rdf:about="http://purl.uniprot.org/SHA-384/3321257FC5AC9939663C14A4BA2A2068E49930FEF976288437260FFDCE73B0F0915520E68DCCDC3942EC391020AF922C">
+<rdf:type rdf:resource="http://purl.uniprot.org/core/Function_Annotation"/>
+<rdfs:comment rdf:ID="_503043394935008">Plays a role in virus cell tropism, and may be required for efficient virus replication in macrophages.</rdfs:comment>
+</rdf:Description>
+<rdf:Description rdf:about="#_503043394935008">
+<attribution rdf:resource="#_503043394935009"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://purl.uniprot.org/SHA-384/F2B7966777F370F0CB09ED1FD58B1816956AA25399F473C78E553F394E9F2B14E9EDDCF5FD03ADFD8EAC586BFCC5378F">
+<rdf:type rdf:resource="http://purl.uniprot.org/core/Similarity_Annotation"/>
+<rdfs:comment rdf:ID="_50304339493500B">Belongs to the asfivirus MGF 110 family.</rdfs:comment>
+</rdf:Description>
+<rdf:Description rdf:about="#_50304339493500B">
+<attribution rdf:resource="#_50304339493500C"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://purl.uniprot.org/SHA-384/4A77D419CD813632CD5E0BECDA26BD14B0B620B04E7C61655133213EFD298002977389D9DC019616BB7CA77F0A6196E3">
+<rdf:type rdf:resource="http://purl.uniprot.org/core/Signal_Peptide_Annotation"/>
+<range rdf:resource="http://purl.uniprot.org/range/22571063418893614tt1tt16"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://purl.uniprot.org/range/22571063418893614tt1tt16">
+<rdf:type rdf:resource="http://biohackathon.org/resource/faldo#Region"/>
+<faldo:begin rdf:resource="http://purl.uniprot.org/position/22571063418893614tt1"/>
+<faldo:end rdf:resource="http://purl.uniprot.org/position/22571063418893614tt16"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://purl.uniprot.org/position/22571063418893614tt1">
+<rdf:type rdf:resource="http://biohackathon.org/resource/faldo#Position"/>
+<rdf:type rdf:resource="http://biohackathon.org/resource/faldo#ExactPosition"/>
+<faldo:position rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</faldo:position>
+<faldo:reference rdf:resource="http://purl.uniprot.org/isoforms/P0C9I5-1"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://purl.uniprot.org/position/22571063418893614tt16">
+<rdf:type rdf:resource="http://biohackathon.org/resource/faldo#Position"/>
+<rdf:type rdf:resource="http://biohackathon.org/resource/faldo#ExactPosition"/>
+<faldo:position rdf:datatype="http://www.w3.org/2001/XMLSchema#int">16</faldo:position>
+<faldo:reference rdf:resource="http://purl.uniprot.org/isoforms/P0C9I5-1"/>
+</rdf:Description>
+<rdf:Description rdf:about="#_50304339493500E">
+<attribution rdf:resource="#_5030433949350010"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://purl.uniprot.org/annotation/PRO_0000373207">
+<rdf:type rdf:resource="http://purl.uniprot.org/core/Chain_Annotation"/>
+<rdfs:comment>Protein MGF 110-8L</rdfs:comment>
+<range rdf:resource="http://purl.uniprot.org/range/22571063418893614tt17tt124"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://purl.uniprot.org/range/22571063418893614tt17tt124">
+<rdf:type rdf:resource="http://biohackathon.org/resource/faldo#Region"/>
+<faldo:begin rdf:resource="http://purl.uniprot.org/position/22571063418893614tt17"/>
+<faldo:end rdf:resource="http://purl.uniprot.org/position/22571063418893614tt124"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://purl.uniprot.org/position/22571063418893614tt17">
+<rdf:type rdf:resource="http://biohackathon.org/resource/faldo#Position"/>
+<rdf:type rdf:resource="http://biohackathon.org/resource/faldo#ExactPosition"/>
+<faldo:position rdf:datatype="http://www.w3.org/2001/XMLSchema#int">17</faldo:position>
+<faldo:reference rdf:resource="http://purl.uniprot.org/isoforms/P0C9I5-1"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://purl.uniprot.org/position/22571063418893614tt124">
+<rdf:type rdf:resource="http://biohackathon.org/resource/faldo#Position"/>
+<rdf:type rdf:resource="http://biohackathon.org/resource/faldo#ExactPosition"/>
+<faldo:position rdf:datatype="http://www.w3.org/2001/XMLSchema#int">124</faldo:position>
+<faldo:reference rdf:resource="http://purl.uniprot.org/isoforms/P0C9I5-1"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://purl.uniprot.org/SHA-384/B606999C2EB3B80CA45A50634AF3F9DD387094DB55FF82F8A6457FDD3F35BF8E584FA94935680587485E6371F3B736E9">
+<rdf:type rdf:resource="http://purl.uniprot.org/core/Glycosylation_Annotation"/>
+<rdfs:comment>N-linked (GlcNAc...); by host</rdfs:comment>
+<range rdf:resource="http://purl.uniprot.org/range/22571063418893614tt76tt76"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://purl.uniprot.org/range/22571063418893614tt76tt76">
+<rdf:type rdf:resource="http://biohackathon.org/resource/faldo#Region"/>
+<faldo:begin rdf:resource="http://purl.uniprot.org/position/22571063418893614tt76"/>
+<faldo:end rdf:resource="http://purl.uniprot.org/position/22571063418893614tt76"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://purl.uniprot.org/position/22571063418893614tt76">
+<rdf:type rdf:resource="http://biohackathon.org/resource/faldo#Position"/>
+<rdf:type rdf:resource="http://biohackathon.org/resource/faldo#ExactPosition"/>
+<faldo:position rdf:datatype="http://www.w3.org/2001/XMLSchema#int">76</faldo:position>
+<faldo:reference rdf:resource="http://purl.uniprot.org/isoforms/P0C9I5-1"/>
+</rdf:Description>
+<rdf:Description rdf:about="#_5030433949350013">
+<attribution rdf:resource="#_5030433949350010"/>
+</rdf:Description>
+<rdf:Description rdf:about="http://purl.uniprot.org/isoforms/P0C9I5-1">
+<rdf:type rdf:resource="http://purl.uniprot.org/core/Simple_Sequence"/>
+<modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2009-05-05</modified>
+<version rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</version>
+<precursor rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</precursor>
+<mass rdf:datatype="http://www.w3.org/2001/XMLSchema#int">14778</mass>
+<crc64Checksum rdf:datatype="http://www.w3.org/2001/XMLSchema#token">99268871299C95F7</crc64Checksum>
+<rdf:value>MKVLILVLLGVVILQAAPIRKVENLLPTRNPPQNELVYWCTYANQCDFCWECIHGICRNRIQADWPVIHQNDWIINCTVSRWNGQCHYYEGSQQYLHHEMDCINPTSHTYPHTEYMKIYERDDL</rdf:value>
+</rdf:Description>
+<rdf:Description rdf:about="#_503043394935009">
+<manual rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</manual>
+<evidence rdf:resource="http://purl.obolibrary.org/obo/ECO_0000250"/>
+</rdf:Description>
+<rdf:Description rdf:about="#_5030433949350010">
+<manual rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</manual>
+<evidence rdf:resource="http://purl.obolibrary.org/obo/ECO_0000255"/>
+</rdf:Description>
+<rdf:Description rdf:about="#_50304339493500C">
+<manual rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</manual>
+<evidence rdf:resource="http://purl.obolibrary.org/obo/ECO_0000305"/>
+</rdf:Description>
+</rdf:RDF>

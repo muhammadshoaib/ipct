@@ -1,0 +1,500 @@
+package gcsearch;
+
+import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringReader;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Properties;
+
+import javax.servlet.ServletContext;
+
+import org.researchaware.core.DataExtracter;
+import org.researchaware.core.MySQLConnector;
+import org.xml.sax.InputSource;
+
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
+import com.sun.corba.se.spi.orbutil.fsm.Guard.Result;
+
+public class GeneSearchFactory {
+	ServletContext context = null; 
+	public GeneSearchFactory(ServletContext context) { 
+		this.context = context; 
+	}
+	public String GetGeneGraphML(String inputType, String GeneIDs, String databases, String graphType) { 
+
+		try {
+			System.out.println(graphType); 
+			Connection conn = MySQLConnector.ConnectToServer("172.25.53.172", "cbio", "cbio", "GENEDB"); 
+			java.sql.Statement stm = conn.createStatement(); 
+
+			GraphMLWriter gmlw = new GraphMLWriter(); 
+			gmlw.AddKey(new Key("l0", "all", "label", "string")); 
+			gmlw.AddKey(new Key("dbName", "node", "Database Name", "string"));
+			gmlw.AddKey(new Key("fullName", "node", "Full Name", "string")); 
+
+			String GeneID; 
+			String[] GeneIDsArray = GeneIDs.split(";"); 
+
+			HashMap<String, Reactome> reactoms = new HashMap<>(); 
+
+			for(int outer = 0; outer<GeneIDsArray.length; outer++) { 
+				GeneID = GeneIDsArray[outer]; 
+				String sql = "SELECT * FROM PROTINE_DATA_EXD WHERE MATCH (GENE_NAME) AGAINST ('" + GeneID + "')"; 
+				System.out.println(sql); 
+				ResultSet rs = stm.executeQuery(sql); 
+
+
+				Node geneNode = new Node(GeneID); 
+				geneNode.AddData("l0", GeneID);
+				geneNode.AddData("dbName", "gene");
+				gmlw.AddNode(geneNode);
+
+				HashMap<String, Protein> proteins = new HashMap<>(); 
+
+				while(rs.next()) { 
+
+					String uniprotAC = rs.getString("UNIPROT_ID"); 
+					if(uniprotAC.indexOf(";") != -1) { 
+						uniprotAC = uniprotAC.substring(0, uniprotAC.indexOf(";")); 
+					}
+
+					String protineURI = Globals.UNIPROT_UP_IRI + uniprotAC; 
+					System.out.println(Globals.UNIPROT_UP_IRI + uniprotAC + ".rdf");
+
+					String texID =  rs.getString("OX").trim().split(" ", 2)[0]; 
+
+					texID = texID.split("=")[1]; 
+
+					proteins.put(uniprotAC, new Protein(uniprotAC, rs.getString("PROTINE_ID"), texID)); 
+
+					Node protineNode = new Node(uniprotAC); 
+					protineNode.AddData("l0", rs.getString("PROTINE_ID").split(" ")[0]);
+					protineNode.AddData("dbName", "uniprot");
+					protineNode.AddData("fullName", rs.getString("PROTINE_ID"));
+
+					gmlw.AddNode(protineNode);
+					Edge geneProtineEdge = new Edge(geneNode, protineNode); 
+					geneProtineEdge.AddData("l0", "encodedWith");
+					gmlw.AddEdge(geneProtineEdge);
+
+					if(databases.contains("organism")) {
+						Node texonomyNode = new Node(texID); 
+						texonomyNode.AddData("l0", texID);
+						texonomyNode.AddData("dbName", "uniprot");
+						gmlw.AddNode(texonomyNode);
+
+
+						Edge protineTexEdge = new Edge(protineNode, texonomyNode); 
+						geneProtineEdge.AddData("l0", "hasTexonomy");
+						gmlw.AddEdge(protineTexEdge);
+					}
+					System.out.println(texID); 
+
+
+
+					/*
+				ArrayList<String> predicates = new ArrayList<>(); 
+				predicates.add(0, Globals.UNIPROT_BASE_IRI + "encodedBy");
+				predicates.add(1, Globals.UNIPROT_BASE_IRI + "orfName"); 
+
+				System.out.println(protineURI ); 
+				List<RDFNode> genes = basicTrippleStore.NestedSearch(protineURI, predicates); 
+				if(genes.size() < 1) { 
+					predicates.add(1, Globals.SKOS_CORE + "prefLabel"); 
+					genes = basicTrippleStore.NestedSearch(protineURI, predicates); 
+				}
+
+				System.out.println(protineURI + " "  + genes.size()); 
+
+				for(int i = 0; i<genes.size(); i++) { 
+					Node node = new Node("encodedBy_" + i); 
+					node.AddData("l0", genes.get(i).toString());
+					gmlw.AddNode(node);
+
+					Edge edge = new Edge(protineNode, node); 
+					edge.AddData("l0", "encodedBy" );
+					gmlw.AddEdge(edge);
+				}
+				//System.out.println("HELLO 2" ); 
+					 */
+					/*
+					if(databases.contains("atlas")) { 
+
+						AtlasExpression atlessExpression = new AtlasExpression(); 
+						HashMap<String, List<Properties>> atlasmappings = atlessExpression.GetExpression(uniprotAC); 
+						Iterator it = atlasmappings.entrySet().iterator();
+						while(it.hasNext()) { 
+							Map.Entry pair = (Map.Entry)it.next();
+							Node node = new Node((String) pair.getKey()); 
+							node.AddData("l0", (String) pair.getKey());
+							node.AddData("dbName", "atlas");
+							gmlw.AddNode(node);
+							Edge edge = new Edge(protineNode, node); 
+							edge.AddData("l0", "expariment");
+							gmlw.AddEdge(edge);
+							List<Properties> properties = (List<Properties>) pair.getValue(); 
+
+							for(int i = 0; i<properties.size(); i++) { 
+								Properties p = properties.get(i); 
+								Node pValueChieldNode = new Node((String) pair.getKey() + "_P_VALUE"); 
+								pValueChieldNode.AddData("l0", p.getProperty("P_VALUE"));
+								pValueChieldNode.AddData("dbName", "atlas");
+								gmlw.AddNode(pValueChieldNode);
+								Edge pValuEdge = new Edge(node, pValueChieldNode); 
+								pValuEdge.AddData("l0", "P Value");
+								gmlw.AddEdge(pValuEdge);
+							}
+						}
+					} */
+
+					/*
+					if(databases.contains("reactome")) { 
+						java.sql.Statement recStatement = conn.createStatement(); 
+						String recSQL = "SELECT * FROM UNIPROT_REACTOME_MAPPING WHERE UP_ID = '" + uniprotAC + "'";  
+						System.out.println(recSQL); 
+						ResultSet rrs = recStatement.executeQuery(recSQL); 
+						while(rrs.next()) { 
+							Node recNode = new Node(rrs.getString("RC_ID")); 
+							recNode.AddData("l0", rrs.getString("RC_ID"));
+							recNode.AddData("dbName", "reactome");
+							gmlw.AddNode(recNode);
+
+							Edge recEdge = new Edge(protineNode, recNode); 
+							recEdge.AddData("l0", "hasReactom");
+							gmlw.AddEdge(recEdge);
+						}
+						rrs.close();
+						recStatement.close();
+					}
+					 */
+
+					/*
+					if(databases.contains("chembl")) { 
+						java.sql.Statement chemblStatement = conn.createStatement(); 
+						String chemblSQL = "SELECT * FROM CHEMBL_UP_MAPPINGS WHERE accession = '" + uniprotAC + "'";  
+						System.out.println(chemblSQL); 
+						ResultSet chrs = chemblStatement.executeQuery(chemblSQL); 
+						while(chrs.next()) { 
+							Node chbNode = new Node(chrs.getString("component_type")); 
+							chbNode.AddData("l0", chrs.getString("component_type"));
+							chbNode.AddData("dbName", "chembl");
+							chbNode.AddData("fullName", chrs.getString("description"));
+							gmlw.AddNode(chbNode);
+
+							Edge chblEdge = new Edge(protineNode, chbNode); 
+							chblEdge.AddData("l0", "haChambel");
+							gmlw.AddEdge(chblEdge);
+						}
+						chrs.close();
+						chemblStatement.close();
+					}
+
+
+					 */
+				}
+				if(databases.contains("chembl")) {
+					String chemblSQL = "SELECT * FROM `UP_SMALL_MOLIC` INNER JOIN ("
+							+ "SELECT DISTINCT `UNIPROT_ID` FROM PROTINE_DATA_EXD "
+							+ "WHERE MATCH (GENE_NAME) AGAINST ('"+GeneID+"')) AS a "
+							+ "ON a.UNIPROT_ID = accession";
+					System.out.println(chemblSQL); 
+					java.sql.Statement chemblStatement = conn.createStatement(); 
+					ResultSet chrs = chemblStatement.executeQuery(chemblSQL); 
+					while(chrs.next()) { 
+						String chrID = chrs.getString("molregno")+"_" + chrs.getString("record_id"); 
+						Node chbNode = new Node(chrID); 
+						chbNode.AddData("l0", chrs.getString("pref_name"));
+						chbNode.AddData("dbName", "chembl");
+						chbNode.AddData("fullName", chrs.getString("pref_name"));
+						gmlw.AddNode(chbNode);
+
+						Edge chblEdge = new Edge(chrID, chrs.getString("UNIPROT_ID")); 
+						chblEdge.AddData("l0", "haChambel");
+						gmlw.AddEdge(chblEdge);
+					}
+				}
+
+				if(databases.contains("reactome")) { 
+					String recSQL = "SELECT * FROM `UNIPROT_REACTOME_MAPPING` INNER JOIN ("
+							+ "SELECT DISTINCT `UNIPROT_ID` FROM PROTINE_DATA_EXD "
+							+ "WHERE MATCH (GENE_NAME) AGAINST ('"+GeneID+"')) AS a "
+							+ "ON a.UNIPROT_ID = UP_ID";
+
+					System.out.println(recSQL); 
+
+					java.sql.Statement recStatement = conn.createStatement(); 
+					System.out.println(recSQL); 
+					ResultSet rrs = recStatement.executeQuery(recSQL); 
+					while(rrs.next()) { 
+
+						if(graphType.equals("summerized")) { 
+							if(reactoms.containsKey(rrs.getString("RC_ID")) == false) { 
+								reactoms.put(rrs.getString("RC_ID"), 
+										new Reactome(rrs.getString("RC_ID"), rrs.getString("DETAILS_1"), 
+												rrs.getString("UNIPROT_ID"), GeneID)); 
+							} else { 
+								reactoms.get(rrs.getString("RC_ID")).AddProtein(rrs.getString("UNIPROT_ID"));
+								reactoms.get(rrs.getString("RC_ID")).AddGene(GeneID);
+							}
+						} else { 
+
+							Node recNode = new Node(rrs.getString("RC_ID")); 
+							recNode.AddData("l0", rrs.getString("DETAILS_1"));
+							recNode.AddData("dbName", "reactome");
+							gmlw.AddNode(recNode);
+
+							Edge recEdge = new Edge(rrs.getString("UNIPROT_ID"), rrs.getString("RC_ID")); 
+							recEdge.AddData("l0", "hasReactom");
+							gmlw.AddEdge(recEdge);
+						}
+					}
+					rrs.close();
+					recStatement.close();
+
+					if(!graphType.equals("summerized"))  {  
+						recSQL = " SELECT RC1.RECT_1 AS RC11, RC1.RECT_2 AS RC12, RC2.`RECT_1` AS RC21, `RC2`.`RECT_2` AS RC22 FROM ( "
+								+ "SELECT RC_ID FROM `UNIPROT_REACTOME_MAPPING` INNER JOIN "
+								+ "(SELECT DISTINCT `UNIPROT_ID` FROM PROTINE_DATA_EXD WHERE MATCH (GENE_NAME) AGAINST ('"+GeneID+"')) AS a "
+								+ "ON a.UNIPROT_ID = UP_ID) B  INNER JOIN  `REACTOME_PATHWAYS` AS RC1 ON B.RC_ID = RC1.`RECT_1`"
+								+ "INNER JOIN REACTOME_PATHWAYS AS RC2 ON B.RC_ID = RC2.`RECT_2`"; 
+
+						System.out.println(recSQL); 
+
+						recStatement = conn.createStatement(); 
+						System.out.println(recSQL); 
+						rrs = recStatement.executeQuery(recSQL); 
+						while(rrs.next()) { 
+							if(gmlw.ContainNode(rrs.getString("RC11")) && 
+									gmlw.ContainNode(rrs.getString("RC12"))) { 
+								Edge recEdge1 = new Edge(rrs.getString("RC11"), rrs.getString("RC12")); 
+								recEdge1.AddData("l0", "hasPathWay");
+								gmlw.AddEdge(recEdge1);
+								Edge recEdge2 = new Edge(rrs.getString("RC21"), rrs.getString("RC22")); 
+								recEdge2.AddData("l0", "hasPathWay");
+								gmlw.AddEdge(recEdge2);
+							}
+						}
+					}
+				}
+
+				if(databases.contains("atlas")) { 
+					sql = "SELECT * FROM `ALTAS_UP_MAPPINGS` INNER JOIN ("
+							+ "SELECT DISTINCT `UNIPROT_ID` FROM PROTINE_DATA_EXD "
+							+ "WHERE MATCH (GENE_NAME) AGAINST ('"+GeneID+"')) AS a "
+							+ "ON a.UNIPROT_ID = ALTAS_UP_MAPPINGS.`UNIPROT_AC`";
+					sql = "SELECT * FROM (SELECT DISTINCT UP_AC, `FECTOR_VAL`, `EXPR_ID` "
+							+ "FROM ATLAS_EXPRESSION_CLEAN WHERE MATCH (LABEL) AGAINST ('"+GeneID+"') "
+							+ "AND `FECTOR_PROP` = 'organism_part') EXPRS INNER JOIN "
+							+ "(SELECT ALTAS_UP_MAPPINGS.* FROM `ALTAS_UP_MAPPINGS` INNER JOIN "
+							+ "(SELECT DISTINCT `UNIPROT_ID` "
+							+ "FROM PROTINE_DATA_EXD WHERE MATCH (GENE_NAME) AGAINST ('"+GeneID+"')) AS a "
+							+ "ON a.UNIPROT_ID = ALTAS_UP_MAPPINGS.`UNIPROT_AC`) B "
+							+ "ON EXPRS.UP_AC = B.`ALTAS_MAPPING_ID` "; 
+					System.out.println(sql);
+					java.sql.Statement atlesStm = conn.createStatement(); 
+					ResultSet atlesrs = atlesStm.executeQuery(sql); 
+					String atlesFectorValue = ""; 
+					while(atlesrs.next()) { 
+						atlesFectorValue = atlesrs.getString("FECTOR_VAL").replace(" ", "_"); 
+						if(!gmlw.ContainNode(atlesrs.getString("EXPR_ID"))) { 
+							
+							Node atlesExprNode = new Node(atlesrs.getString("EXPR_ID")); 
+							atlesExprNode.AddData("l0", atlesrs.getString("EXPR_ID"));
+							atlesExprNode.AddData("dbName", "atlas");
+							gmlw.AddNode(atlesExprNode); 
+							Edge edge = new Edge(atlesrs.getString("UNIPROT_AC"), atlesrs.getString("EXPR_ID")); 
+							gmlw.AddEdge(edge); 
+						}
+						
+						if(!gmlw.ContainNode(atlesFectorValue)) { 
+							Node atlesOrgNode = new Node(atlesFectorValue); 
+							atlesOrgNode.AddData("l0", atlesrs.getString("FECTOR_VAL"));
+							atlesOrgNode.AddData("dbName", "atlas");
+							gmlw.AddNode(atlesOrgNode); 
+							Edge edge = new Edge(atlesrs.getString("EXPR_ID"), atlesFectorValue); 
+							gmlw.AddEdge(edge); 
+						}
+						
+
+					}
+				}
+
+				if(databases.contains("biomodels")) { 
+					/*
+					String dataModelSql = "SELECT * FROM BIOMODELS INNER JOIN ("
+							+ "SELECT DISTINCT `MODEL_SUB_ID` "
+							+ "FROM `BIOMODELS` INNER JOIN (SELECT * FROM BIOMODELS_MAPPINGS WHERE `UNIPROT_ID` = '"+uniprotAC+"') AS a ON "
+							+ "`MODEL_INT_ID` = `BIOMODEL_ID`) AS B ON B.MODEL_SUB_ID = BIOMODELS.`MODEL_SUB_ID` "
+							+ "WHERE `MODEL_PROP` = 'sbmlRdf:name'; "; 
+					 */
+					String dataModelSql = "SELECT DISTINCT OX, `PROP_VAL` FROM  (SELECT MODEL_ID, OX FROM `UP_BIOMODELS_S` INNER JOIN"
+							+ "(SELECT UNIPROT_ID, OX FROM PROTINE_DATA_EXD WHERE MATCH (GENE_NAME) AGAINST ('"+GeneID+"')) AS A ON "
+							+ "UP_BIOMODELS_S.`UNIPROT_ID` = A.UNIPROT_ID ) B INNER JOIN `BIOMODELS_NAMES` ON `MODEL_SUB_ID` = B.`MODEL_ID`"; 
+
+					dataModelSql = "SELECT DISTINCT OX, MODEL_CORE_ID, `PROP_VAL` FROM  "
+							+ "(SELECT DISTINCT `MODEL_CORE_ID`, OX FROM `UP_BIOMODELS_S` INNER JOIN(SELECT UNIPROT_ID, OX "
+							+ "FROM PROTINE_DATA_EXD WHERE MATCH (GENE_NAME) AGAINST ('"+GeneID+"')) AS A "
+							+ "ON UP_BIOMODELS_S.`UNIPROT_ID` = A.UNIPROT_ID ) B "
+							+ "LEFT JOIN `BIOMODELS_NAMES` ON `MODEL_SUB_ID` = B.`MODEL_CORE_ID`"; 
+					System.out.println(dataModelSql); 
+					java.sql.Statement bioModelStatement = conn.createStatement(); 
+					ResultSet dnmrs = bioModelStatement.executeQuery(dataModelSql); 
+					int modelID = 0; 
+					while(dnmrs.next()) { 
+						String nodeID = dnmrs.getString("MODEL_CORE_ID").replace(
+								"http://identifiers.org/biomodels.db/", ""); 
+						if(gmlw.ContainEdge(nodeID) == false) { 
+							Node dmNode = new Node(new String(nodeID)); 
+							dmNode.AddData("l0", nodeID);
+							dmNode.AddData("dbName", "biomodels");
+							dmNode.AddData("fullName", nodeID);
+							gmlw.AddNode(dmNode);
+
+							String texID =  dnmrs.getString("OX").trim().split(" ", 2)[0]; 
+
+							texID = texID.split("=")[1]; 
+
+							Edge biomodelEdge = new Edge(texID, nodeID); 
+							biomodelEdge.AddData("l0", "hasReactom");
+							gmlw.AddEdge(biomodelEdge);
+						}
+						String inodeID = nodeID + modelID; 
+
+						Node dmNode = new Node(new String(inodeID)); 
+						dmNode.AddData("l0",  dnmrs.getString("PROP_VAL"));
+						dmNode.AddData("dbName", "biomodels");
+						dmNode.AddData("fullName", dnmrs.getString("PROP_VAL"));
+						gmlw.AddNode(dmNode);
+
+
+						Edge biomodelEdge = new Edge(nodeID, inodeID); 
+						biomodelEdge.AddData("l0", "hasName");
+						gmlw.AddEdge(biomodelEdge);
+					}
+					dnmrs.close(); 
+					bioModelStatement.close(); 
+				}
+
+				if(databases.contains("biosamples")) { 
+					String bioSampleSQL = "SELECT * FROM ("
+							+ "SELECT * FROM `ALTAS_UP_MAPPINGS` INNER JOIN (SELECT DISTINCT `UNIPROT_ID` "
+							+ "FROM PROTINE_DATA_EXD WHERE MATCH (GENE_NAME) AGAINST ('"+GeneID+"')) AS a "
+							+ "ON a.UNIPROT_ID = ALTAS_UP_MAPPINGS.`UNIPROT_AC` WHERE `EXPARIMENT_ID` IS NOT NULL) AS B "
+							+ "INNER JOIN DRIEVED_FROM WHERE OBJECT = EXPARIMENT_ID"; 
+					bioSampleSQL = "SELECT SIO_59.OBJECT AS SAMPLE, UNIPROT_AC, EXPARIMENT_ID FROM ("
+							+ "SELECT SUBJECT AS SAMPLEGROUP, UNIPROT_AC, EXPARIMENT_ID FROM `DRIEVED_FROM` INNER JOIN ("
+							+ "SELECT UNIPROT_AC, `EXPARIMENT_ID` FROM `ALTAS_UP_MAPPINGS` INNER JOIN (SELECT DISTINCT `UNIPROT_ID` "
+							+ "FROM PROTINE_DATA_EXD WHERE MATCH (GENE_NAME) AGAINST ('"+GeneID+"')) AS a "
+							+ "ON a.UNIPROT_ID = ALTAS_UP_MAPPINGS.`UNIPROT_AC` WHERE `EXPARIMENT_ID` IS NOT NULL) B ON "
+							+ "DRIEVED_FROM.`OBJECT` = EXPARIMENT_ID) GROUPS INNER JOIN "
+							+ "`SIO_59` ON GROUPS.SAMPLEGROUP = SIO_59.SUBJECT"; 
+					bioSampleSQL = "SELECT SIO_59.OBJECT AS SAMPLE, UNIPROT_AC,  `EXPR_ID` "
+							+ "FROM (SELECT SUBJECT AS SAMPLEGROUP, UNIPROT_AC, EXPR_ID  "
+							+ "FROM `DRIEVED_FROM` INNER JOIN (SELECT UNIPROT_AC, `EXPR_ID`  "
+							+ "FROM `UNIPROT_EXPRESSION_MAPPING` INNER JOIN (SELECT DISTINCT `UNIPROT_ID`  "
+							+ "FROM PROTINE_DATA_EXD WHERE MATCH (GENE_NAME) AGAINST ('"+GeneID+"')) AS a  "
+							+ "ON a.UNIPROT_ID = UNIPROT_EXPRESSION_MAPPING.`UNIPROT_AC`) B  "
+							+ "ON DRIEVED_FROM.`OBJECT` = EXPR_ID) GROUPS INNER JOIN `SIO_59`  "
+							+ "ON GROUPS.SAMPLEGROUP = SIO_59.SUBJECT"; 
+					
+					System.out.println(bioSampleSQL); 
+					java.sql.Statement bioSMPLStatement = conn.createStatement(); 
+					ResultSet bsrs = bioSMPLStatement.executeQuery(bioSampleSQL); 
+					while(bsrs.next()) { 
+						String nodeText = bsrs.getString("SAMPLE").replace(
+								"<http://rdf.ebi.ac.uk/resource/biosamples/sample/",  ""); 
+						nodeText = nodeText.replace(">", ""); 
+						Node dsNode = new Node(nodeText); 
+						dsNode.AddData("l0",nodeText);
+						dsNode.AddData("dbName", "biosamples");
+						dsNode.AddData("fullName", nodeText);
+						gmlw.AddNode(dsNode);
+
+						if(gmlw.ContainNode(bsrs.getString("EXPR_ID")) == false) { 
+							Node expressionNode = new Node(bsrs.getString("EXPR_ID")); 
+							expressionNode.AddData("l0",nodeText);
+							expressionNode.AddData("dbName", "atlas");
+							expressionNode.AddData("fullName", bsrs.getString("EXPR_ID"));
+							gmlw.AddNode(expressionNode);
+
+							String protID =  bsrs.getString("UNIPROT_AC"); 
+
+							Edge expressionEdge = new Edge(protID, bsrs.getString("EXPR_ID")); 
+							expressionEdge.AddData("l0", "hasSample");
+							gmlw.AddEdge(expressionEdge);
+						}
+
+						Edge biomodelEdge = new Edge(bsrs.getString("EXPR_ID"), nodeText); 
+						biomodelEdge.AddData("l0", "hasSample");
+						gmlw.AddEdge(biomodelEdge);
+
+					}
+				}
+
+
+
+				proteins = null; 
+
+			}
+			stm.close();
+			conn.close();
+
+			if(graphType.equals("summerized")) { 
+				Iterator it = reactoms.entrySet().iterator(); 
+				//System.out.println("HELLO SUMERIZED"); 
+				//System.out.println(reactoms.size()); 
+				while(it.hasNext()) { 
+					Map.Entry pair =  (Map.Entry) it.next(); 
+					Reactome rec = (Reactome) pair.getValue(); 
+					//System.out.println(rec.ReactomeID + " " + rec.Genes.toString()); 
+					if(rec.HasMultiGeneRelations()) { 
+						//System.out.println()
+						Node reactomeNode = new Node(rec.ReactomeID); 
+						reactomeNode.AddData("l0", rec.ReactomeLabel);
+						reactomeNode.AddData("dbName", "reactome");
+						gmlw.AddNode(reactomeNode); 
+
+						for(int i = 0; i<rec.Proteins.size(); i++) { 
+							Edge reactomeEdge = new Edge(rec.ReactomeID, rec.Proteins.get(i)); 
+							reactomeEdge.AddData("l0", "hasReactome");
+							gmlw.AddEdge(reactomeEdge); 
+						}
+					}
+				}
+			}
+
+			return gmlw.GetGraphML(); 
+
+
+		}  catch (SQLException e) {
+			// TODO Auto-generated catch block
+
+
+			e.printStackTrace();
+			return null;
+
+		} 
+	}
+	public void AddLinkNodes() { 
+
+	}
+
+}
